@@ -1,0 +1,630 @@
+﻿@using STEnterprise.Areas.Purchase.Models
+@model STEnterprise.Areas.Purchase.Models.PurchaseModel
+@{
+    ViewBag.Title = "Return Purchase";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container panel panel-default" style="float: left">
+    <div class="panel-heading"><h2>Return Purchase</h2></div>
+    <div class="panel-body">
+        <table class="table">
+            <tr>
+                <td class="col-md-1">
+                    <label>Return Date</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="PurchaseDate" class="form-control" value="@DateTime.Now.ToString("dd/MMMM/yyyy")" />
+                    <span class="error">Valid order date required (ex. MM-dd-yyyy)</span>
+                </td>
+            </tr>
+              <tr>
+                <td class="col-md-2">
+                    <label>Consignment Number</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="ConsignmentNumber" class="form-control" />
+                    <span class="error"></span>
+                </td>
+                <td></td>
+            </tr>
+            
+            <tr>
+                <td class="col-md-1">
+                    <label>Supplier Name</label>
+                </td>
+                <td class="col-md-5">
+                    <select id="Suppliers" class="form-control">
+                        <option value="0">--select supplier name--</option>
+                    </select>
+                    <span class="error">Supplier name required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Total Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="TotalAmount" class="form-control" readonly="readonly" />
+                    <span class="error"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Truck Number</label>
+                </td>
+                <td class="col-md-5">
+                    <select id="Truck" class="form-control"></select>
+                    <span class="error">Truck Number required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Product Name</label>
+                </td>
+                <td class="col-md-5">
+                    <select id="Products" class="form-control">
+                        <option value="0">--select product name--</option>
+                    </select>
+                    <span class="error"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Unit(Bag)</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" class="form-control  " id="PurchaseUnitBag" readonly="readonly" />
+                    <span class="error">Purchase Unit Bag required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Unit(Kg)</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" class="form-control " id="PurchaseUnitKG" readonly="readonly" />
+                    <span class="error">Purchase Unit KG required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Price</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="PurchasePrice" class="form-control " readonly="readonly" />
+                    <span class="error">Purchase Price required</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" id="hidePurchasePrice" class="form-control " readonly="readonly"/>
+                    <input type="hidden" id="hdnTotalReturn" class="form-control " readonly="readonly" />
+                    <span class="error">Purchase Price required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Remarks</label>
+                </td>
+                <td class="col-md-5">
+                    <textarea id="Remarks" style="width:100%" class="form-control"></textarea>
+                </td>
+            </tr>
+        </table>
+        <hr />
+        <table class="table">
+            <tr>
+                <td class="col-md-2">
+                    <label>Return Unit(Bag)</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="ReturnPurchaseUnitBag" class="form-control Number  purchaseinput"  onkeypress="return isNumberKey(event)"/>
+                    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekId" })
+                    <span class="error">Sale Unit Bag required</span>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Return Unit(Kg)</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="ReturnPurchaseUnitKG" class="form-control purchaseinput" onkeypress="return IsDouble(event);" />
+                    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekIdForKG" })
+                    <span class="error">Sale Unit KG required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Return Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="ReturnPurchaseAmount" class="form-control purchaseinput" readonly="readonly" />
+                    <span class="error">Purchase Price required</span>
+                </td>
+
+            </tr>
+            <tr>              
+                <td>
+                    <input type="button" id="add" value="Add Record" class="btn btn-danger" />
+                </td>
+            </tr>
+        </table>
+        <hr />
+        <div id="PurchaseItems" class="tablecontainer table table-striped table-hover">
+
+        </div>
+
+        <div style="padding:10px 0px; text-align:center">
+            <input id="submit" type="button" value="Save" class="btn btn-success" style="padding: 10px 20px" />
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+<script>
+    // Show / Hide Customer Details
+    $(document).ready(function () {
+        var totalReturn = 0;
+        PurchaseItems = [];
+        //Add button click function
+        $('#add').click(function () {
+            //Check validation of order item
+            var isValidItem = true;
+
+            if ($('#Products').val().trim() == '') {
+                $('#Products').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#Products').siblings('span.error').css('visibility', 'hidden');
+            }
+            if (!($('#ReturnPurchaseUnitBag').val().trim() != '' && !isNaN($('#ReturnPurchaseUnitBag').val().trim()))) {
+                isValidItem = false;
+                $('#ReturnPurchaseUnitBag').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#ReturnPurchaseUnitBag').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if (!($('#ReturnPurchaseUnitKG').val().trim() != '' && !isNaN($('#ReturnPurchaseUnitKG').val().trim()))) {
+                isValidItem = false;
+                $('#ReturnPurchaseUnitKG').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#ReturnPurchaseUnitKG').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if (!($('#ReturnPurchaseAmount').val().trim() != '' && !isNaN($('#ReturnPurchaseAmount').val().trim()))) {
+                isValidItem = false;
+                $('#ReturnPurchaseAmount').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#ReturnPurchaseAmount').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            //Add item to list if valid
+            if (isValidItem) {
+                var returnPurchaseUnitBag = parseFloat($("#ReturnPurchaseUnitBag").val());
+                var purchaseUnitBag = parseFloat($("#PurchaseUnitBag").val());
+                var returnPurchaseUnitKG = parseFloat($("#ReturnPurchaseUnitKG").val());
+                var purchaseUnitKG = parseFloat($("#PurchaseUnitKG").val());
+
+                if (purchaseUnitBag >= returnPurchaseUnitBag && purchaseUnitKG >= returnPurchaseUnitKG) {
+                    PurchaseItems.push({
+                        TruckNumber: $("#Truck option:selected").text(),
+                        TruckDetailId: $("#Truck option:selected").val(),
+                        ProductName: $("#Products option:selected").text(),
+                        ProductId: $("#Products option:selected").val(),
+                        ReturnPurchaseUnitBag: parseFloat($('#ReturnPurchaseUnitBag').val().trim()),
+                        ReturnPurchaseUnitKG: parseFloat($('#ReturnPurchaseUnitKG').val().trim()),
+                        ReturnPurchaseAmount: parseFloat($('#ReturnPurchaseAmount').val().trim()),
+                        PurchasePrice: $('#hidePurchasePrice').val().trim()
+
+
+                    });
+                    totalReturn += parseFloat($('#ReturnPurchaseAmount').val().trim());
+                } else {
+                    var status = $("#MessageForExistChekId");
+                    status.html("<font color=red>'<b>" + returnPurchaseUnitBag + "</b>' Return Purchase Unit Bag is not valid!</font>");
+                }
+
+                //Clear fields
+                $('#MessageForExistChekId,#ReturnPurchaseUnitBag,#ReturnPurchaseUnitKG,#ReturnPurchaseAmount').val('');
+
+            }
+            //populate order items
+            GeneratedItemsTable();
+
+        });
+
+
+        //function for show added items in table
+        function GeneratedItemsTable() {
+            if (PurchaseItems.length > 0) {
+                var $table = $('<table id="myTable" class="table table-striped table-hover" width="100%"/>');
+                $table.append('<thead><tr class="success">' +
+                    '<th>Return Unit(Bag)</th>' +
+                    '<th>Return Unit(Kg)</th>' +
+                    '<th>Return Amount</th>' +
+                    '</tr></thead>');
+
+                var $tbody = $('<tbody/>');
+                $.each(PurchaseItems, function (i, val) {
+                    var $row = $('<tr class="active"/>');
+                    $row.append($('<td/>').html(val.ReturnPurchaseUnitBag));
+                    $row.append($('<td/>').html(val.ReturnPurchaseUnitKG));
+                    $row.append($('<td/>').html(val.ReturnPurchaseAmount));
+                    //$row.append($('<td/>').html("<button type='button' class='btn btn-default'>" +
+                    //    "<span class='glyphicon glyphicon-pencil'></span>" +
+                    //    "</button>"));
+
+                    //$row.append($('<td/>').html("<button type='button' class='btn btn-default' onclick='deleteRow(this)'>" +
+                    //    "<span class='glyphicon glyphicon-remove'></span>" +
+                    //    "</button>"));
+
+                    $tbody.append($row);
+                });
+
+                $table.append($tbody);
+
+                $('#PurchaseItems').html($table);
+            }
+        }
+
+
+        $('#submit').click(function () {
+
+            //validation of order
+            var isAllValid = true;
+
+            if ($('#ConsignmentNumber').val().trim() == '') {
+                $('#ConsignmentNumber').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#ConsignmentNumber').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#Suppliers').val().trim() == '') {
+                $('#Suppliers').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#Suppliers').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#PurchaseDate').val().trim() == '') {
+                $('#PurchaseDate').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#PurchaseDate').siblings('span.error').css('visibility', 'hidden');
+            }
+           
+
+
+            //Save if valid
+            if (isAllValid) {
+                var data = {
+                    ConsignmentNumber: $('#ConsignmentNumber').val().trim(),
+                    PurchaseDate: $('#PurchaseDate').val().trim(),
+                    SupplierName: $("#Suppliers option:selected").text(),
+                    SupplierId: $("#Suppliers option:selected").val(),
+                    //TruckNumber: $("#Truck option:selected").text(),
+                    //TruckDetailId: $("#Truck option:selected").val(),
+                    //ProductName: $("#Products option:selected").text(),
+                    //ProductId: $("#Products option:selected").val(),
+                    Remarks: $('#Remarks').val().trim(),
+                    ReturnAmount: totalReturn,
+                    PurchaseDetails: PurchaseItems
+                   
+                }
+
+                $(this).val('Please wait...');
+                $.ajax({
+                    url: '/Purchase/ReturnPurchase/SaveReturnPurchase',
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    dataType: "JSON",
+                    contentType: "application/json",
+                    success: function (d) {
+
+                        //check is successfully save to database
+                        if (d.status == true) {
+                            //will send status from server side
+                            alert('Successfully done.');
+                            //clear form
+                            PurchaseItems = [];
+                            $('#ConsignmentNumber').val('');
+                            $('#PurchaseDate').val('');
+                            $('#TotalAmount').val('');
+                            $('#Suppliers').val('');
+                            $('#Products').val('');
+                            $('#Truck').val('');
+                            $('#Remarks').val('');
+                            $('#PurchaseUnitBag').val('');
+                            $('#PurchaseUnitKG').val('');
+                            $('#PurchasePrice').val('');
+                            $('#PurchaseItems').empty();
+                        }
+                        else {
+                            alert('Failed');
+                        }
+                        $('#submit').val('Save');
+                    },
+                    error: function () {
+                        alert('Error. Please try again.');
+                        $('#submit').val('Save');
+                    }
+                });
+            }
+
+        });
+
+    });
+
+
+
+
+
+    $(function () {
+        $('#PurchaseDate').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+    });
+
+    $('input[type=date]').each(function () {
+        this.type = "text";
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#ConsignmentNumber").change(function () {
+            var consignmentNumber = $("#ConsignmentNumber").val();
+            var json = { consignmentNumber: consignmentNumber };
+            $('#Truck').empty();
+
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/ReturnPurchase/GetPurchaseDetilByConsignment",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function (data) {
+                    $("#Truck").append('<option value="0">-Select Truck Number-</option>');
+                    $.each(data, function (key, value) {                        
+                        $("#Truck").append('<option value=' + value.TruckDetailId + '>' + value.TruckNumber + '</option>');
+                        
+                    });
+
+                },
+
+            });
+        });
+
+        $("#ConsignmentNumber").change(function () {
+            var consignment = $("#ConsignmentNumber").val();
+            var json = { consignment: consignment };
+            $('#Suppliers').empty();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/ReturnPurchase/GetSuppliersByConsignment",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $("#Suppliers").append('<option value=' + value.SupplierId + '>' + value.SupplierName + '</option>');
+                    });
+
+                },
+
+            });
+        });
+
+        $("#ConsignmentNumber").change(function () {
+            var consignmentNumber = $("#ConsignmentNumber").val();
+            var json = { consignmentNumber: consignmentNumber };
+            $("#TotalAmount").empty();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/ReturnPurchase/GetTotalAmountByConsignment",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+
+                success: function (data) {
+                    $("#TotalAmount").val(data.TotalAmount);
+                }
+            });
+        });
+
+
+        $("#Truck").change(function () {
+            var consignmentNumber = $("#ConsignmentNumber").val();
+            var truck = $("#Truck option:selected").text();
+            var json = { consignmentNumber: consignmentNumber, truck: truck };
+            $('#Products').empty();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/ReturnPurchase/GetProductNameByConsignment",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+
+                success: function (data) {
+                    $("#Products").append('<option value="0">-Select Product Name-</option>');
+                    $.each(data, function (key, value) {
+                        $("#Products").append('<option value=' + value.ProductId + '>' + value.ProductName + '</option>');
+                    });
+                },
+            });
+        });
+
+        $("#Products").change(function () {
+
+            var id = $("#Products option:selected").val();
+            var consignmentNumber = $("#ConsignmentNumber").val();
+            $("#PurchaseUnitBag").empty();
+            $("#PurchaseUnitKG").empty();
+            $("#PurchasePrice").empty();
+            $("#hidePurchasePrice").empty();
+
+            var json = {
+                productId: id,
+                consignmentNumber: consignmentNumber
+            };
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/ReturnPurchase/GetUnitBagKgPriceByProdcutName",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+
+                success: function (productDetail) {
+                    $("#PurchaseUnitBag").val(productDetail.PurchaseUnitBag);
+                    $("#PurchaseUnitKG").val(productDetail.PurchaseUnitKg);
+                    $("#PurchasePrice").val(productDetail.PurchasePrice);
+                    $("#hidePurchasePrice").val(productDetail.PurchasePrice);
+                }
+            });
+        });
+
+        $("#ReturnPurchaseUnitKG").change(function () {
+            var returnPurchaseUnitKG = $("#ReturnPurchaseUnitKG").val();
+            var hidePurchasePrice = $("#hidePurchasePrice").val();
+            var returnAmount = hidePurchasePrice * returnPurchaseUnitKG;
+            $("#ReturnPurchaseAmount").empty();
+
+            $("#ReturnPurchaseAmount").val(returnAmount);
+
+        });
+
+
+        $("#ConsignmentNumber").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Purchase/Purchase/AutoCompleteConsignment",
+                    type: "GET",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "",
+                results: ""
+            }
+        });
+
+
+    });
+
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ReturnPurchaseUnitBag").keyup(function () {
+            var UnitBag = parseFloat($("#ReturnPurchaseUnitBag").val());
+            var PurchaseUnitBag = parseFloat($("#PurchaseUnitBag").val());
+
+            var message = $("#MessageForExistChekId");
+            if (PurchaseUnitBag >= UnitBag) {
+                message.html("");
+            } else {
+                message.html("<font color=red>'<b>" + UnitBag + "</b>' Return Purchase Unit Bag is not Valid!</font>");
+            }
+
+        });
+
+        $("#ReturnPurchaseUnitKG").keyup(function () {
+            var returnPurchaseUnitKG = parseFloat($("#ReturnPurchaseUnitKG").val());
+            var purchaseUnitKG = parseFloat($("#PurchaseUnitKG").val());
+
+            var message = $("#MessageForExistChekIdForKG");
+            if (purchaseUnitKG >= returnPurchaseUnitKG) {
+                message.html("");
+            } else {
+                message.html("<font color=red>'<b>" + returnPurchaseUnitKG + "</b>' Return Purchase Unit KG is not Valid!</font>");
+            }
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    function IsDouble(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+            return false;
+        }
+        else if (charCode == 13) {
+            return false;
+        }
+        status = "";
+        return true;
+    }
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+</script>
+
+<style>
+    /*Adding some css for looks good*/
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+
+    /*css for table*/
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 1px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+
+    #hideSalePrice {
+        display: none;
+    }
+</style>
+
+

@@ -1,0 +1,77 @@
+﻿@model STEnterprise.Areas.Purchase.Models.BankDetail
+@{
+    ViewBag.Title = "Bank Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete Bank Detail Information</h2>
+<hr />
+
+@using (Html.BeginForm("Delete", "BankDetail", FormMethod.Post, new { @class = "form-horizontal"  }))
+{
+    @Html.AntiForgeryToken()
+    if (Model != null && Model.BankDetailId > 0)
+    {
+        @Html.HiddenFor(b => b.BankDetailId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.BankName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.BankName, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.BankName)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.BranchName, new {@class = "control-label col-md-offset-2 col-sm-2"})
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.BranchName, new {@class = "form-control", @disabled = "disabled"})
+            @Html.ValidationMessageFor(b => b.BranchName)
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.AccountNumber, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.AccountNumber, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.AccountNumber)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.Address, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.Address, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.Address)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.ContactPerson, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.ContactPerson, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.ContactPerson)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.IsActive, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(a => a.IsActive, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Active", Value = "true" },
+                    new SelectListItem { Text = "Inactive", Value = "false" }
+                }, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.IsActive)
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <input type="submit" value="Delete" class="btn btn-danger" />
+        </div>
+    </div>
+}
+<div>
+    <a class="popup btn btn-primary" href="/Purchase/BankDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+</div>

@@ -1,0 +1,71 @@
+﻿@model STEnterprise.Areas.Inventory.Models.Measurement
+@{
+    ViewBag.Title = "Measurement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align:center; padding:10px">Add Measurement</h2>
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+
+@using (Html.BeginForm("Save", "Measurement", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.MeasurementId > 0)
+    {
+        @Html.HiddenFor(b => b.MeasurementId)
+    }
+    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekId" })
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.MeasurementName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.MeasurementName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.MeasurementName)
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class=" col-sm-offset-3 col-sm-2 ">
+            <a class="popup btn btn-primary" href="/Inventory/Measurement/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#MeasurementName").keyup(function () {
+            var name = $("#MeasurementName").val(); //Value entered in the text box
+            var status = $("#MessageForExistChekId"); //DIV object to display the status message
+            var user = $.trim(name);
+            if (user.length >= 3) {
+                status.html("Checking....") //While our Thread works, we will show some message to indicate the progress
+                //jQuery AJAX Post request
+                $.post("/Measurement/GetMeasurementNameIsExist", { MeasurementName: name },
+                            function (data) {
+                                if (data == true) {
+                                    status.html("<font color=green>'<b>" + name + "</b>' is available!</font>");
+                                } else {
+                                    status.html("<font color=red>'<b>" + name + "</b>' is not available!</font>");
+                                }
+                            });
+            } else {
+                status.html("Need more characters...");
+            }
+        });
+    });
+</script>

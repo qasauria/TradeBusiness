@@ -1,0 +1,39 @@
+﻿
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Purchase.Models.BankDetail>
+
+
+@{
+    ViewBag.Title = "Bank Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Purchase/BankDetail/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Bank Detail</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.BankName).Titled("BankName").Sortable(true).Filterable(true);
+    columns.Add(a => a.BranchName).Titled("Branch Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.AccountNumber).Titled("Account Number").Sortable(true).Filterable(true);
+    columns.Add(a => a.Address).Titled("Address").Sortable(true).Filterable(true);
+    columns.Add(a => a.ContactPerson).Titled("Contact Person").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.BankDetailId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.BankDetailId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>

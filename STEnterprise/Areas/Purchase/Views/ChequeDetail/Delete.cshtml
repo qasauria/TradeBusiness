@@ -1,0 +1,136 @@
+﻿@model STEnterprise.Areas.Purchase.Models.ChequeDetail
+@{
+    ViewBag.Title = "Cheque Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 style="color: black;text-align:center; padding:10px">Delete Cheque Detail Information</h3>
+<hr />
+
+@using (Html.BeginForm("Delete", "ChequeDetail", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    if (Model != null && Model.ChequeDetailId > 0)
+    {
+        @Html.HiddenFor(b => b.ChequeDetailId)
+    }
+    <div class="form-group">
+        @Html.LabelFor(a => a.ChequeIssuedByShow, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(a => a.ChequeIssuedByShow, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.ChequeIssuedByShow)
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.OwnerName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+
+        <div class="col-sm-5">
+            @Html.TextBoxFor(a => a.OwnerName, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.OwnerName)
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.ChequeNumber, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.ChequeNumber, new { @class = "form-control", @disabled = "disabled" })
+            @Html.ValidationMessageFor(b => b.ChequeNumber)
+        </div>
+    </div>
+        <div class="form-group">
+
+            @Html.LabelFor(a => a.BankDetailId, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.DropDownListFor(
+            x => x.BankName,
+            new SelectList(@ViewBag.bankname, "BankDetailId", "BankName", "")
+            , new { @class = "form-control", @disabled = "disabled" }
+            )
+                @Html.ValidationMessageFor(b => b.BankDetailId)
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            @Html.LabelFor(a => a.ChequeAmount, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.TextBoxFor(b => b.ChequeAmount, new { @class = "form-control", @disabled = "disabled" })
+                @Html.ValidationMessageFor(b => b.ChequeAmount)
+            </div>
+        </div>
+        <div class="form-group">
+
+            @Html.LabelFor(a => a.ChequeIssueDate, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.TextBoxFor(b => b.ChequeIssueDateShow, new { @class = "form-control datepicker", @disabled = "disabled" })
+                @Html.ValidationMessageFor(b => b.ChequeIssueDate)
+            </div>
+        </div>
+        <div class="form-group">
+
+            @Html.LabelFor(a => a.ChequeSubmitDate, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.TextBoxFor(b => b.ChequeSubmitDateShow, new { @class = "form-control datepicker", @disabled = "disabled" })
+                @Html.ValidationMessageFor(b => b.ChequeSubmitDate)
+            </div>
+        </div>
+        <div class="form-group">
+
+            @Html.LabelFor(a => a.ChequeMaturedDate, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.TextBoxFor(b => b.ChequeMaturedDateShow, new { @class = "form-control datepicker", @disabled = "disabled" })
+                @Html.ValidationMessageFor(b => b.ChequeMaturedDate)
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            @Html.LabelFor(a => a.ChequeStatus, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.DropDownListFor(a => a.ChequeStatusShow, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Done", Value = "true" },
+                    new SelectListItem { Text = "Panding", Value = "false" }
+                }, new { @class = "form-control", @disabled = "disabled" })
+                @Html.ValidationMessageFor(b => b.ChequeStatus)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(ui => ui.IsActive, new { @class = "control-label col-md-offset-2 col-sm-2" })
+            <div class="col-sm-5">
+                @Html.DropDownListFor(a => a.IsActive, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Active", Value = "true" },
+                    new SelectListItem { Text = "Inactive", Value = "false" }
+                }, new { @class = "form-control", @disabled = "disabled" })
+                @Html.ValidationMessageFor(b => b.IsActive)
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <div class=" col-sm-offset-4 col-sm-2 ">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class=" col-sm-offset-3 col-sm-2 ">
+                <a class="popup btn btn-primary" href="/Purchase/ChequeDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+            </div>
+        </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+            $('.datepicker').datepicker({
+                dateFormat: "dd/M/yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-60:+0"
+            });
+
+    });
+</script>

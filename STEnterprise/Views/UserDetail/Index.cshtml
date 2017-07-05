@@ -1,0 +1,41 @@
+﻿@using System.Web.UI.WebControls
+@using System.Web.UI.WebControls.WebParts
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Models.UserDetail>
+
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "User Information Details";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/UserDetail/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New User Detail</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.Username).Titled("Employee Name").Sortable(true).Filterable(true);  
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.UserDetailId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.UserDetailId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>

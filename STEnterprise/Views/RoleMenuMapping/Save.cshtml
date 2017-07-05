@@ -1,0 +1,160 @@
+﻿@model IEnumerable<STEnterprise.Models.Navigation>
+
+@{
+    ViewBag.Title = "Role Menu Mapping";
+}
+
+<h3>Role Menu Mapping</h3>
+<h4>Here you can assign which role will get which menu.</h4>
+<hr />
+
+@TempData["Message"]
+
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //clicking the parent checkbox should check or uncheck all child checkboxes
+        $(".parent").click(function () {
+
+            $(this).closest('fieldset').find('.child').prop('checked', this.checked);
+        }
+        );
+        //clicking the last unchecked or checked checkbox should check or uncheck the parent checkbox
+        $('.child').click(
+            function () {
+                if (this.checked == true) {
+                    var flag = true;
+                    $(this).closest('fieldset').find('.child').one(
+                        function () {
+                            if (this.CheckUncheckChildren == true)
+                                flag = false;
+                        }
+                    );
+                    $(this).closest('fieldset').find('.parent').prop('checked', flag);
+                }
+            }
+        );
+    });
+</script>
+
+<div style="width: 80%;">
+    @using (Html.BeginForm("Save", "RoleMenuMapping", FormMethod.Get, new { id = 0 }))
+    {
+        <div class="form-group row">
+            @Html.Label("Role Name", new { @class = "control-label col-sm-2" })
+            <div class="col-sm-3">
+                @Html.DropDownList("RoleId", new SelectList(ViewBag.RoleInfo, "RoleId", "RoleName"),
+                    "--Select Role Name--", new { @class = "form-control", onchange = "this.form.submit()" }
+                    )
+                @Html.ValidationMessage("RoleId", new { @class = "text-danger", @style = "color:red" })
+            </div>
+            @*<button type="submit" class="btn btn-default">Assign</button>*@
+        </div>
+
+    }
+    <div class="form-group row">
+        <label for="treeview" class="col-md-2"></label>
+        <div class="col-md-10">
+            @foreach (var item in Model)
+            {
+                if (item.ParentId != null || item.HasSubMenu.Equals(true))
+                {
+                    <fieldset>
+
+                        @if (item.ParentId == null)
+                        {
+                            <dt>
+                                @if (item.IsActive.Equals(true))
+                                {
+                                    @Html.CheckBox(item.MenuName, true, new { @value = item.MenuId, @class = "parent" })<span>&nbsp;</span>
+                                    @item.MenuName
+                                    <br />
+                                }
+                                else
+                                {
+                                    @Html.CheckBox(item.MenuName, false, new { @value = item.MenuId, @class = "parent" })<span>&nbsp;</span>
+                                    @item.MenuName
+                                    <br />
+                                }
+                            </dt>
+                        }
+
+                        @foreach (var subItem in Model)
+                        {
+                            if (item.MenuId == subItem.ParentId)
+                            {
+                                
+                                <dd style="margin-left: 22px;">
+                                    @if (subItem.IsActive.Equals(true))
+                                    {
+                                        @Html.CheckBox(subItem.MenuName, true, new { @value = subItem.MenuId, @class = "child" })<span>&nbsp;</span>
+                                        @subItem.MenuName
+                                        <br />
+                                    }
+                                    else
+                                    {
+                                        @Html.CheckBox(subItem.MenuName, false, new { @value = subItem.MenuId, @class = "child" })<span>&nbsp;</span>
+                                        @subItem.MenuName
+                                        <br />
+                                    }
+                                </dd>
+                         
+                            }
+                        }
+
+                    </fieldset>
+                }
+                else
+                {
+                    if (item.ParentId == null)
+                    {
+                        if (item.IsActive.Equals(true))
+                        {
+                            @Html.CheckBox(item.MenuName, true, new { @value = item.MenuId })<span>&nbsp;</span>
+                            @item.MenuName
+                            <br />
+                        }
+                        else
+                        {
+                            @Html.CheckBox(item.MenuName, false, new { @value = item.MenuId })<span>&nbsp;</span>
+                            @item.MenuName
+                            <br />
+                        }
+                    }
+                }
+            }
+
+            <input type="button" id="GetTotal" value="Save" class="btn btn-default">
+            <br/>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#GetTotal').on('click', function () {
+            var prices = [];
+            var roleId = $('#RoleId').val();
+            $('input:checked').each(function () {
+
+                prices.push($(this).attr("value"));
+            });
+            $.ajax({
+                url: "/RoleMenuMapping/Save",
+                type: "POST",
+                data: { menuId: prices, roleId: roleId },
+                dataType: "json",
+                traditional: true,
+                success: function (d) {
+                    if (d.status == true) {
+                        alert("Assign Successfully");
+                    } else {
+                        alert('Error. Please try again.');
+                    }
+                }
+            });
+        });
+    });
+
+</script>

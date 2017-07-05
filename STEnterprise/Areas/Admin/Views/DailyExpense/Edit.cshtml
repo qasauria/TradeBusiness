@@ -1,0 +1,101 @@
+﻿@model STEnterprise.Areas.Admin.Models.DailyExpense
+@{
+    ViewBag.Title = "Daily Expense";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Update Daily Expense</h3>
+<hr/>
+
+
+@using (Html.BeginForm("Edit", "DailyExpense", FormMethod.Post, new { @class = "form-horizontal", @role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+
+    if (Model != null && Model.DailyExpenseId > 0)
+    {
+        @Html.HiddenFor(b => b.DailyExpenseId)
+    }
+
+ 
+    <div class="form-group">
+        @Html.LabelFor(a => a.ExpenseType, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(
+            x => x.ExpenseDetailId,
+            new SelectList(@ViewBag.ExpenseDetailInfo, "ExpenseDetailId", "ExpenseType", "")
+            , new { @class = "form-control" }
+            )
+            @Html.ValidationMessageFor(c => c.ExpenseDetailId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.TotalAmount, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(Model => Model.TotalAmount, new { @class = "form-control" })
+            @Html.ValidationMessageFor(a => a.TotalAmount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.PaidAmount, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(Model => Model.PaidAmount, new { @class = "form-control" })
+            @Html.ValidationMessageFor(a => a.PaidAmount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.DueAmount, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(Model => Model.DueAmount, new { @class = "form-control" })
+            @Html.ValidationMessageFor(a => a.DueAmount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.Date, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            <input type="text" id="Date" name="Date" class="form-control" value="@Model.Date.ToString("dd-MMM-yyyy")"/>
+            @Html.ValidationMessageFor(a => a.Date, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class=" col-sm-offset-1 col-sm-2 ">
+            <a class="popup btn btn-primary" href="/Admin/DailyExpense/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    
+    $(function () {
+        $('#Date').datepicker({ dateFormat: 'dd-MM-yy', type: Text }).click(function () { $(this).focus(); });
+    });
+
+    $('input[type=date]').each(function () {
+        this.type = "text";
+    });
+
+    $(document).ready(function () {
+        $('#TotalAmount').change(function () {
+            var total = $("#TotalAmount").val();
+            var paid = $("#PaidAmount").val();
+            $('#DueAmount').val(total - paid);
+            $("#DueAmount").attr("disabled", "disabled");
+        });
+        $('#PaidAmount').change(function () {
+            var total = $("#TotalAmount").val();
+            var paid = $("#PaidAmount").val();
+            $('#DueAmount').val(total - paid);
+            $("#DueAmount").attr("disabled", "disabled");
+        });
+    });
+</script>
+
+

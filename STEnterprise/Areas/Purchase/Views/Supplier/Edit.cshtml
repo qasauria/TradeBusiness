@@ -1,0 +1,70 @@
+﻿@model STEnterprise.Areas.Purchase.Models.Supplier
+@{
+    ViewBag.Title = "Supplier Info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 style="color: black;text-align:center; padding:10px">Update Supplier Information</h3>
+<hr />
+
+@using (Html.BeginForm("Edit", "Supplier", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    if (Model != null && Model.SupplierId > 0)
+    {
+        @Html.HiddenFor(b => b.SupplierId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.SupplierName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.SupplierName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.SupplierName, "",new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.SupplierAddress, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.SupplierAddress, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.SupplierAddress,"" ,new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.SupplierContactNo, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.SupplierContactNo, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.SupplierContactNo, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.SupplierEmail, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.SupplierEmail, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.SupplierEmail, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.IsActive, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(a => a.IsActive, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Active", Value = "true" },
+                    new SelectListItem { Text = "Inactive", Value = "false" }
+                }, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.IsActive, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <input type="submit" value="Update" class="btn btn-primary"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class=" col-sm-offset-3 col-sm-2 ">
+            <a class="popup btn btn-primary" href="/Purchase/Supplier/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+        </div>
+    </div>
+}

@@ -1,0 +1,102 @@
+﻿@model STEnterprise.Areas.Purchase.Models.BankDetail
+@{
+    ViewBag.Title = "Bank Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Add Bank Information</h3>
+<hr/>
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+@using (Html.BeginForm("Save", "BankDetail", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.BankDetailId > 0)
+    {
+        @Html.HiddenFor(b => b.BankDetailId)
+    }
+
+    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekId" })
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.BankName, new {@class = "control-label col-md-offset-2 col-sm-2"})
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.BankName, new {@class = "form-control", id = "BankName"})
+            @Html.ValidationMessageFor(b => b.BankName)
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.BranchName, new {@class = "control-label col-md-offset-2 col-sm-2"})
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.BranchName, new {@class = "form-control"})
+            @Html.ValidationMessageFor(b => b.BranchName)
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.AccountNumber, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.AccountNumber, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.AccountNumber)
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.Address, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.Address, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.Address)
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.ContactPerson, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.ContactPerson, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.ContactPerson)
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+}
+<div>
+    <a class="popup btn btn-primary" href="/Purchase/BankDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#BankName").keyup(function () {
+            var name = $("#BankName").val(); //Value entered in the text box
+            var status = $("#MessageForExistChekId"); //DIV object to display the status message
+            var user = $.trim(name);
+            if (user.length >= 2) {
+                status.html("Checking....") //While our Thread works, we will show some message to indicate the progress
+                //jQuery AJAX Post request
+                $.post("/BankDetail/GetBankNameIsExist", { bankName: name },
+                            function (data) {
+                                if (data == true) {
+                                    status.html("<font color=green>'<b>" + name + "</b>' is available!</font>");
+                                } else {
+                                    status.html("<font color=red>'<b>" + name + "</b>' is not available!</font>");
+                                }
+                            });
+            } else {
+                status.html("Need more characters...");
+            }
+        });
+    });
+</script>

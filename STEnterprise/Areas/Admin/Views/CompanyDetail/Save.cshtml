@@ -1,0 +1,91 @@
+﻿@model STEnterprise.Areas.Admin.Models.CompanyDetail
+
+@{
+    ViewBag.Title = "Compnay Info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   
+}
+
+<h3>Add Company Information.</h3>
+<hr/>
+
+@using (Html.BeginForm("Save", "CompanyDetail", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.CompanyId > 0)
+    {
+        @Html.HiddenFor(c => c.CompanyId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(c => c.CompanyName, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.CompanyName, new {@class = "form-control"})
+            @Html.ValidationMessageFor(c => c.CompanyName, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Logo, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            <input type="file" id="File" name="File" />
+            @Html.ValidationMessageFor(m => m.Logo)
+            </div>
+     </div>
+
+    <div class="form-group">
+        @Html.LabelFor(c => c.Address, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.Address, new { @class = "form-control" })           
+            @Html.ValidationMessageFor(c => c.Address, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.Phone, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.Phone, new {@class = "form-control"})
+            @Html.ValidationMessageFor(c => c.Phone, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.Fax, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.Fax, new {@class = "form-control"})
+            @Html.ValidationMessageFor(c => c.Fax)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.Email, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.Email, new {@class = "form-control"})
+            @Html.ValidationMessageFor(c => c.Email)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.TinCertificate, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.TinCertificate, new {@class = "form-control"})
+            @Html.ValidationMessageFor(c => c.TinCertificate)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(c => c.VatRegNumber, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(c => c.VatRegNumber, new {@class = "form-control"})
+            @Html.ValidationMessageFor(c => c.VatRegNumber)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <a class="popup btn btn-primary" href="/Admin/CompanyDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+    </div>
+}
+
+   

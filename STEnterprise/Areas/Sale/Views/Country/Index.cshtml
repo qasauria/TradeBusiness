@@ -1,0 +1,36 @@
+﻿
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Sale.Models.Country>
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Sale/Country/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Country</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.CountryName).Titled("Country Name").Sortable(true).Filterable(true);    
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.CountryId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.CountryId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>
+

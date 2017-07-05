@@ -1,0 +1,66 @@
+﻿@model STEnterprise.Models.AssignUserRole
+@{
+    ViewBag.Title = "Assign User Role";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h3>Edit User Role. </h3>
+<h4>You can change user role and his/her status.</h4>
+<hr/>
+
+@using (Html.BeginForm("Edit", "AssignUserRole", FormMethod.Post, new { @class = "form-horizontal", @role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.RoleId > 0)
+    {
+        @Html.HiddenFor(b => b.RoleId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.UserDetailId, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.DropDownListFor(
+            x => x.UserDetailId,
+            new SelectList(Model.userDetail, "UserDetailId", "UserName"),
+            "--Select Username--", new { @class = "form-control" }
+            )
+            @Html.ValidationMessageFor(c => c.UserDetailId, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.RoleId, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.DropDownListFor(
+                x => x.RoleId,
+                new SelectList(Model.roleInfo, "RoleId", "RoleName"),
+                "--Select Role Name--", new {@class = "form-control"}
+                )
+            @Html.ValidationMessageFor(c => c.RoleId, "", new {@class = "text-danger", @style = "color:red"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(ui => ui.IsActive, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.DropDownList("IsActive", new List<SelectListItem>()
+            {
+                new SelectListItem {Text = "Active", Value = "true"},
+                new SelectListItem {Text = "Inactive", Value = "false"}
+            }, new {@class = "form-control"})
+        </div>
+    </div>
+
+
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+
+        <div>
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+}

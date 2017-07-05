@@ -1,0 +1,117 @@
+﻿@model System.Collections.Generic.IEnumerable<STEnterprise.Models.Navigation>
+
+@{
+    Layout = null;
+}
+
+<link href="~/Content/navigation/bootstrap.min.css" rel="stylesheet"/>
+<link href="~/Content/navigation/bootstrap-theme.min.css" rel="stylesheet" />
+<script src="~/Content/navigation/bootstrap.min.js"></script>
+<link href="~/Content/navigation/nav-style.css" rel="stylesheet" />
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+@* Dropdown Menu - Start *@
+@*@if (!@Model.Equals(null))
+    {
+        foreach (var menu in @Model.ToList())
+        {
+            <ul class="nav navbar-nav">
+               @if (menu.ParentId != null || menu.HasSubMenu.Equals(true))
+               {
+                   <li class="dropdown">
+
+                        @if (menu.ParentId == null)
+                        {
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                @menu.MenuName
+                                <span class="caret"></span>
+                            </a>
+                        }
+                            <ul class="dropdown-menu">
+                                <li>
+                                    @foreach (var submenu in Model)
+                                    {
+                                        if (menu.MenuId == submenu.ParentId)
+                                        {
+    @Html.ActionLink(@submenu.MenuName, @submenu.ActionName, @submenu.ControllerName, new { Area = @submenu.AreaName }, null)
+                                        }
+                                    }
+
+                                </li>
+                            </ul>
+                   </li>
+               }
+               else
+               {
+                   <li>
+                       @if (menu.ParentId == null)
+                       {
+                           @Html.ActionLink(@menu.MenuName, @menu.ActionName, @menu.ControllerName, new { Area = @menu.AreaName }, null)
+                       }
+                   </li>
+               }
+            </ul>
+        }
+    }
+    else
+    {
+        @Html.Action("Login", "UserLogin")
+    }*@
+
+@* Dropdown Menu - Start *@
+
+
+@* Sidebar Navigation Menu *@
+
+<div class="nav-side-menu">
+    <div class="brand">ST Enterprise</div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+    <div class="menu-list">
+        <ul id="menu-content" class="menu-content collapse out">
+            @if (!@Model.Equals(null))
+            {
+                foreach (var menu in @Model.ToList())
+                {
+                    if (menu.ParentId != null || menu.HasSubMenu.Equals(true))
+                    {
+                        if (menu.ParentId == null)
+                        {
+                            <li data-toggle="collapse" data-target="#@menu.MenuId" class="collapsed active">
+                                <a href="#"><i class="fa fa-gift fa-lg"></i> @menu.MenuName <span class="arrow"></span></a>
+                            </li>
+                        }
+                        <ul class="sub-menu collapse" id="@menu.MenuId">
+                            @foreach (var submenu in Model)
+                            {
+                                if (menu.MenuId == submenu.ParentId)
+                                {
+                                    <li>@Html.ActionLink(@submenu.MenuName, @submenu.ActionName, @submenu.ControllerName, new { Area = @submenu.AreaName }, null)</li>
+
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <li>
+                            @if (menu.ParentId == null)
+                            {
+                                <a href="@Url.Action(@menu.ActionName, @menu.ControllerName, new { Area = @menu.AreaName }, null)">
+                                    <i class="fa fa-user fa-lg"></i> @menu.MenuName
+                                </a>
+                            }
+                        </li>
+                    }
+                }
+            }
+            else
+            {
+                @Html.Action("Login", "UserLogin")
+            }
+        </ul>
+
+    </div>
+</div>

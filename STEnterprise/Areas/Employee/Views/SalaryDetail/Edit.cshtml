@@ -1,0 +1,417 @@
+﻿@model STEnterprise.Areas.Employee.Models.SalaryDetail
+@{
+    ViewBag.Title = "Salary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align:center; padding:10px">Update Salary Detail Information</h2>
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+
+@using (Html.BeginForm("Edit", "SalaryDetail", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.SalaryDetailId > 0)
+    {
+        @Html.HiddenFor(b => b.SalaryDetailId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.EmployeeId, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(x => x.EmployeeId, new SelectList(ViewBag.EmployeeInfo, "EmployeeId", "EmployeeName"),
+            "--Select Employee Name--", new { @class = "form-control", id = "EmployeeId" }
+            )
+            @Html.ValidationMessageFor(c => c.EmployeeId, "", new {@class = "text-danger", @style = "color: red"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.DesignationName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.DesignationName, new { @class = "form-control", id = "DesignationName", @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.DesignationName)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.MonthlySalary, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.MonthlySalary, new { @class = "form-control", id = "MonthlySalary", @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.MonthlySalary)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.MonthToBePaid, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(a => a.MonthToBePaid, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "--Select Month Name--", Value = "" },
+                    new SelectListItem { Text = "January", Value = "January" },
+                    new SelectListItem { Text = "February", Value = "February" },
+                    new SelectListItem { Text = "March", Value = "March" },
+                    new SelectListItem { Text = "April", Value = "April" },
+                    new SelectListItem { Text = "May", Value = "May" },
+                    new SelectListItem { Text = "June", Value = "June" },
+                    new SelectListItem { Text = "July", Value = "July" },
+                    new SelectListItem { Text = "August", Value = "August" },
+                    new SelectListItem { Text = "September", Value = "September" },
+                    new SelectListItem { Text = "October", Value = "October" },
+                    new SelectListItem { Text = "November", Value = "November" },
+                    new SelectListItem { Text = "December", Value = "December" }
+                }, new { @class = "form-control", @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.MonthToBePaid)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.AdvancedPayment, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.AdvancedPayment, new { @class = "form-control", id = "AdvancedPayment", @onchange = "AdvancedPayment();" })
+            @Html.ValidationMessageFor(b => b.AdvancedPayment)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.WorkingDays, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.WorkingDays, new { @class = "form-control", id = "WorkingDays", @onchange = "WorkingDays();" })
+            @Html.ValidationMessageFor(b => b.WorkingDays)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.PerDaySalary, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.PerDaySalary, new { @class = "form-control", id = "PerDaySalary", @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.PerDaySalary)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.AbsentDays, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.AbsentDays, new { @class = "form-control", id = "AbsentDays", @onchange = "AbsentDays();" })
+            @Html.ValidationMessageFor(b => b.AbsentDays)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.AbsentWisePerDayAmount, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.AbsentWisePerDayAmount, new { @class = "form-control", id = "AbsentWisePerDayAmount",  @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.AbsentWisePerDayAmount)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.PayableSalary, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.PayableSalary, new { @class = "form-control", id = "PayableSalary", @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.PayableSalary)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.PaidSalary, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.PaidSalary, new { @class = "form-control", id = "PaidSalary", @onchange = "PaidSalary();" })
+            @Html.ValidationMessageFor(b => b.PaidSalary)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.DueSalary, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.DueSalary, new { @class = "form-control", id = "DueSalary", @readonly = "readonly" })
+            @Html.ValidationMessageFor(b => b.DueSalary)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(ui => ui.IsActive, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(a => a.IsActive, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Active", Value = "true" },
+                    new SelectListItem { Text = "Inactive", Value = "false" }
+                }, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.IsActive)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class=" col-sm-offset-3 col-sm-2 ">
+            <a class="popup btn btn-primary" href="/Employee/SalaryDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('.datepicker').datepicker({
+                    dateFormat: "dd/M/yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-60:+0"
+        });
+
+        $("#EmployeeId").change(function () {
+                    var tId = $("#EmployeeId").val();
+
+            //if ($("#EmployeeId").val() == 0) {
+            //    alert('aaaa');
+            //    $("#DesignationName").empty();
+            //    $("#MonthlySalary").empty();
+            //    $("#AdvancedPayment").empty();
+            //    $("#WorkingDays").empty();
+            //    $("#AbsentDays").empty();
+            //    $("#PaidSalary").empty();
+            //}
+
+            //else {
+                $("#DesignationName").empty();
+                $("#MonthlySalary").empty();
+                    var json = {
+                    EmployeeId: tId
+                };
+                    $.ajax({
+                    type: "POST",
+                        url: '@Url.Action("DesignationAndTotalSalaryById", "SalaryDetail")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            $("#DesignationName").val(data.DesignationName);
+                            $("#MonthlySalary").val(data.MonthlySalary);
+                            $("#AbsentWisePerDayAmount").val(0);
+                        var monthlySalary = $("#MonthlySalary").val();
+                        var advancedPayment = $("#AdvancedPayment").val();
+                        var workingDays = $("#WorkingDays").val();
+                        var absentDays = $("#AbsentDays").val();
+                        var paidSalary = $("#PaidSalary").val();
+
+                        var perDaySalary = monthlySalary / workingDays;
+                        var absentWisePerDayAmount = perDaySalary * absentDays;
+                        var payableSalary = monthlySalary - advancedPayment - absentWisePerDayAmount;
+                        var dueAmount = payableSalary - paidSalary;
+
+                            $("#PerDaySalary").empty();
+                            $("#AbsentWisePerDayAmount").empty();
+                            $("#PayableSalary").empty();
+                            $("#DueSalary").empty();
+
+                            $("#PerDaySalary").val(perDaySalary);
+                            $("#AbsentWisePerDayAmount").val(absentWisePerDayAmount);
+                            $("#PayableSalary").val(payableSalary);
+                            $("#DueSalary").val(dueAmount);
+                    }
+                });
+                //}
+
+            });
+
+        //advanced payment wise change
+        $("#AdvancedPayment").change(function () {
+                var monthlySalary = $("#MonthlySalary").val();
+                var advancedPayment = $("#AdvancedPayment").val();
+                var absentWisePerDayAmount = $("#AbsentWisePerDayAmount").val();
+                var paidSalary = $("#PaidSalary").val();
+                var payableSalary = monthlySalary - advancedPayment - absentWisePerDayAmount;
+                var dueAmount = payableSalary - paidSalary;
+            $("#PayableSalary").empty();
+            $("#DueSalary").empty();
+
+            $("#PayableSalary").val(payableSalary);
+            $("#DueSalary").val(dueAmount);
+            });
+
+        //working days wise change
+        $("#WorkingDays").change(function () {
+                var monthlySalary = $("#MonthlySalary").val();
+                var advancedPayment = $("#AdvancedPayment").val();
+                var workingDays = $("#WorkingDays").val();
+                var perdaySalary = monthlySalary / workingDays;
+
+                var absentDays = $("#AbsentDays").val();
+                var paidSalary = $("#PaidSalary").val();
+
+                var absentWisePerDayAmount = perdaySalary * absentDays;
+                var payableSalary = monthlySalary - advancedPayment - absentWisePerDayAmount;
+                var dueAmount = payableSalary - paidSalary;
+
+            $("#PerDaySalary").empty();
+            $("#AbsentWisePerDayAmount").empty();
+            $("#PayableSalary").empty();
+            $("#DueSalary").empty();
+
+            $("#PerDaySalary").val(perdaySalary);
+            $("#AbsentWisePerDayAmount").val(absentWisePerDayAmount);
+            $("#PayableSalary").val(payableSalary);
+            $("#DueSalary").val(dueAmount);
+            });
+
+        // absent days wise change
+        $("#AbsentDays").change(function () {
+                var monthlySalary = $("#MonthlySalary").val();
+                var advancedPayment = $("#AdvancedPayment").val();
+                var perDaySalary = $("#PerDaySalary").val();
+                var absentDays = $("#AbsentDays").val();
+                var paidSalary = $("#PaidSalary").val();
+
+                var absentWisePerDayAmount = perDaySalary * absentDays;
+                var payableSalary = monthlySalary - advancedPayment - absentWisePerDayAmount;
+                var dueAmount = payableSalary - paidSalary;
+
+            $("#AbsentWisePerDayAmount").empty();
+            $("#PayableSalary").empty();
+            $("#DueSalary").val(dueAmount);
+
+            $("#AbsentWisePerDayAmount").val(absentWisePerDayAmount);
+            $("#PayableSalary").val(payableSalary);
+            $("#DueSalary").val(dueAmount);
+            });
+
+        //paid salary wise change
+        $("#PaidSalary").change(function () {
+                var payableSalary = $("#PayableSalary").val();
+                var paidSalary = $("#PaidSalary").val();
+                var dueAmount = payableSalary - paidSalary;
+            $("#DueSalary").empty();
+
+            $("#DueSalary").val(dueAmount);
+
+            });
+
+
+
+
+        @*$("#AbsentDays").change(function () {
+            var empId = $("#EmployeeId").val();
+            var working = $("#WorkingDays").val();
+            var absent = $("#WorkingDays").val();
+            $("#PerDaySalary").empty();
+            var json = {
+                EmployeeId: empId,
+                Day: working,
+                AbsentDays: absent
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("AbsentWisePerdayAmountById", "SalaryDetail")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function (data) {
+                    $("#PerDaySalary").val(data.PerDaySalary);
+
+                }
+            });
+        });*@
+
+
+    });
+</script>
+
+
+
+
+@*<script>
+        $(document).ready(function () {
+            $("#EmployeeId").change(function () {
+                var tId = $("#EmployeeId").val();
+                $("#DesignationName").empty();
+                $("#MonthlySalary").empty();
+                    var json = {
+                        EmployeeId: tId
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("DesignationAndTotalSalaryById", "SalaryDetail")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            $("#DesignationName").val(data.DesignationName);
+                            $("#MonthlySalary").val(data.MonthlySalary);
+                        }
+                    });
+            });
+
+
+
+            $("#WorkingDays").change(function () {
+                var monthlySalary = $("#MonthlySalary").val();
+                var working = $("#WorkingDays").val();
+                var perdaySalary = monthlySalary / working;
+                $("#PerDaySalary").empty();
+
+                $("#PerDaySalary").val(perdaySalary);
+
+            });
+
+
+            $("#AbsentDays").change(function () {
+                var payableSalary = $("#PayableSalary").val();
+                var perDaySalary = $("#PerDaySalary").val();
+                var absentDays = $("#AbsentDays").val();
+                var absentAmount = perDaySalary * absentDays;
+                var payableSalary =payableSalary- absentAmount;
+
+                $("#AbsentAmount").empty();
+
+                $("#AbsentAmount").val(absentAmount);
+                $("#PayableSalary").val(payableSalary);
+            });
+
+
+            $("#AdvancedPayment").change(function () {
+                var monthlySalary = $("#MonthlySalary").val();
+                var advancedPayment = $("#AdvancedPayment").val();
+                var payableSalary = monthlySalary - advancedPayment;
+                $("#PayableSalary").empty();
+
+                $("#PayableSalary").val(payableSalary);
+
+            });
+
+
+
+            $("#PaidSalary").change(function () {
+                var payableSalary = $("#PayableSalary").val();
+                var paidSalary = $("#PaidSalary").val();
+                var dueAmount = payableSalary - paidSalary;
+                $("#DueSalary").empty();
+
+                $("#DueSalary").val(dueAmount);
+
+            });
+
+
+
+
+            @*$("#AbsentDays").change(function () {
+                var empId = $("#EmployeeId").val();
+                var working = $("#WorkingDays").val();
+                var absent = $("#WorkingDays").val();
+                $("#PerDaySalary").empty();
+                var json = {
+                    EmployeeId: empId,
+                    Day: working,
+                    AbsentDays: absent
+                };
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AbsentWisePerdayAmountById", "SalaryDetail")',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(json),
+                    success: function (data) {
+                        $("#PerDaySalary").val(data.PerDaySalary);
+
+                    }
+                });
+            });
+
+
+        });
+    </script>*@

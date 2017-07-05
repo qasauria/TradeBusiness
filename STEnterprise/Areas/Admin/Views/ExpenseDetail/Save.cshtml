@@ -1,0 +1,67 @@
+﻿@model STEnterprise.Areas.Admin.Models.ExpenseDetail
+@{
+    ViewBag.Title = "Expense Type";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Add Expense Type</h3>
+<hr/>
+
+
+@using (Html.BeginForm("Save", "ExpenseDetail", FormMethod.Post, new { @class = "form-horizontal", @role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+
+    if (Model != null && Model.ExpenseDetailId > 0)
+    {
+        @Html.HiddenFor(b => b.ExpenseDetailId)
+    }
+
+    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekId" })
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.ExpenseType, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.ExpenseType, new { @class = "form-control",@style="width: 400px" })
+            @Html.ValidationMessageFor(b => b.ExpenseType, "", new { @class = "text-danger" ,@style="color: red"})
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class=" col-sm-offset-1 col-sm-2 ">
+            <a class="popup btn btn-primary" href="/Admin/ExpenseDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ExpenseType").keyup(function () {
+            //alert("nasir");
+            var name = $("#ExpenseType").val(); //Value entered in the text box
+            var status = $("#MessageForExistChekId"); //DIV object to display the status message
+            var user = $.trim(name);
+            if (user.length >= 3) {
+                status.html("Checking....") //While our Thread works, we will show some message to indicate the progress
+                //jQuery AJAX Post request
+                $.post("/ExpenseDetail/GetExpenseNameIsExist", { ExpenseName: name },
+                            function (data) {
+                                if (data == true) {
+                                    status.html("<font color=green>'<b>" + name + "</b>' is available!</font>");
+                                } else {
+                                    status.html("<font color=red>'<b>" + name + "</b>' is not available!</font>");
+                                }
+                            });
+            } else {
+                status.html("Need more characters...");
+            }
+        });
+    });
+</script>

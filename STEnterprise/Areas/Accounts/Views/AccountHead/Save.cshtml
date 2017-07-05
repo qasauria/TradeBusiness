@@ -1,0 +1,63 @@
+﻿
+@model STEnterprise.Areas.Accounts.Models.AccountHead
+
+@{
+    ViewBag.Title = "Save";
+    Layout = null;
+
+}
+
+
+<h2>Save Account Head</h2>
+<hr/>
+
+@using (Html.BeginForm("Save", "AccountHead", FormMethod.Post, new { id = "popupForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.AccountHeadId > 0)
+    {
+        @Html.HiddenFor(d => d.AccountHeadId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.AccountCode, new {@class = "control-label"})
+       
+            @Html.TextBoxFor(a => a.AccountCode, new {@class = "form-control"})
+            @Html.ValidationMessageFor(a => a.AccountCode, "", new {@class = "text-danger", @style = "color:red"})
+        </div>
+    
+    <div class="form-group">
+        @Html.LabelFor(a => a.AccountName, new {@class = "control-label"})
+        
+            @Html.TextBoxFor(a => a.AccountName, new {@class = "form-control"})
+            @Html.ValidationMessageFor(a => a.AccountName, "", new {@class = "text-danger", @style = "color:red"})
+      
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.AccountType, new {@class = "control-label"})
+      
+            @Html.TextBoxFor(a => a.AccountType, new {@class = "form-control"})
+            @Html.ValidationMessageFor(a => a.AccountType, "", new {@class = "text-danger", @style = "color:red"})
+      
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.Description, new { @class = "control-label" })
+        
+            @Html.TextAreaFor(a => a.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(a => a.Description, "", new { @class = "text-danger", @style = "color:red" })
+      
+    </div>
+
+
+    <div class="form-group">
+        
+            <button type="submit" class="btn btn-primary">Save</button>
+      
+    </div>
+
+ 
+}
+
+
+

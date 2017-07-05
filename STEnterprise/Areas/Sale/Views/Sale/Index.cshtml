@@ -1,0 +1,786 @@
+﻿@using STEnterprise.Areas.Sale.Models
+@model STEnterprise.Areas.Sale.Models.SaleModel
+@{
+    ViewBag.Title = "Sale";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+}
+
+
+<div class="container panel panel-default" style="float: left">
+    <div class="panel-heading"><h2>Sale Information </h2></div>
+    <div class="panel-body">
+
+        <table class="table">
+            <tr>
+                <td class="col-md-1">
+                    <label>Selling Date</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="SellingDate" class="form-control" value="@DateTime.Now.ToString("dd/MMMM/yyyy")" />
+                    @Html.ValidationMessageFor(b => b.SellingDate, "", new { @class = "text-danger", @style = "color: red" })
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="col-md-2">
+                    <label>Consignment Number</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="ConsignmentNumber" class="form-control" />
+                    @Html.ValidationMessageFor(b => b.ConsignmentNumber, "", new { @class = "text-danger error", @style = "color: red" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Customer Name</label>
+                </td>
+                <td class="col-md-5 col-md-offset-2">
+                    @Html.DropDownList("Customers", new SelectList(ViewBag.CustomerNameList, "CustomerId", "CustomerName"), "-- Select Customer Name --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(b => b.CustomerId, "", new { @class = "text-danger error", @style = "color: red" })
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Order Number</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="OrderNumber" class="form-control"  />
+                    @Html.ValidationMessageFor(b => b.OrderNumber, "", new { @class = "text-danger error", @style = "color: red" })
+                </td>
+            </tr>
+        </table>
+
+        <hr />
+
+        <table class="table">
+            <tr>
+                <td class="col-md-2">
+                    <label>Product Name</label>
+                </td>
+                <td class="col-md-5">
+                    <select id="Products" class="form-control"></select>
+                    @Html.ValidationMessageFor(b => b.ProductId, "", new { @class = "text-danger error", @style = "color: red" })
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Unit(Bag)</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="SaleUnitBag" class="form-control purchaseinput" onkeypress="return IsDouble(event);" />
+                    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekId" })
+                    <span class="error">SaleUnitBag required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Unit(Kg)</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="SaleUnitKG" class="form-control purchaseinput" onkeypress="return IsDouble(event);" />
+                    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekIdforkg" })
+                    <span class="error">Sale Unit KG required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Price</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="SalePrice" class="form-control purchaseinput" onkeypress="return IsDouble(event);" />
+                    <span class="error">Sale Price required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Total Price</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="TotalPrice" class="form-control purchaseinput" />
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Truck Number</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="TruckNumber" class="form-control purchaseinput TruckNumber" />
+                    @Html.ValidationMessageFor(b => b.TruckNumber, "", new { @class = "text-danger error", @style = "color: red" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <input type="button" id="add" value="Add Record" class="btn btn-danger" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <input type="text" id="hideid" />
+                </td>
+            </tr>
+        </table>
+
+        <hr />
+        <div id="SaleItems" class="tablecontainer table table-striped table-hover">
+
+        </div>
+
+        <table class="table">
+            <tr>
+                <td class="col-md-2">
+                    <label>Previous Due Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="PreviousDueAmount" class="form-control" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Selling Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="SellingAmount" class="form-control" />
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Total Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="TotalAmount" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Paid Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="PaidAmount" class="form-control" onkeypress="return IsDouble(event);" />
+                    <span class="error">Paid Amount required</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Adjustment Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="AdjustmentAmount" class="form-control" value="0.0" onkeypress="return IsDouble(event);" />
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Current Due Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="CurrentDueAmount" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Payment Method</label>
+                </td>
+                <td class="col-md-5">
+                    @Html.DropDownListFor(a => a.PaymentMethod, new List<SelectListItem>()
+                    {
+                        new SelectListItem {Text = "Cash", Value = "1"},
+                        new SelectListItem {Text = "Cheque", Value = "2"},
+                        new SelectListItem {Text = "T.T", Value = "3"}
+                    }, new { @class = "form-control", id = "PaymentMethod" })
+                    @Html.ValidationMessageFor(b => b.PaymentMethod, "", new { @class = "text-danger error", @style = "color: red" })
+                </td>
+            </tr>
+            <tr id="ChequePanel" style="display: none;">
+                <td>
+                    <label>Cheque No</label>
+                </td>
+                <td>
+                    <input type="text" id="ChequeNumber" class="form-control" />
+                </td>
+            </tr>
+            <tr id="TTPanel" style="display: none;">
+                <td class="col-md-1">
+                    <label>T.T Amount</label>
+                </td>
+                <td class="col-md-5">
+                    <input type="text" id="TTNumber" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-1">
+                    <label>Remarks</label>
+                </td>
+                <td class="col-md-5">
+                    <textarea id="Remarks" style="width:100%" class="form-control"></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <div style="padding: 10px 0px; text-align: right">
+            <input id="submit" type="button" value="Save" class="btn btn-success" style="padding: 10px 20px" />
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+<script>
+    // Show / Hide Customer Details
+    $(document).ready(function () {
+
+
+        $("#SaleUnitKG").change(function () {
+            $("#TotalPrice").val($("#SaleUnitKG").val() * $("#SalePrice").val());
+            $("#TotalPrice").attr("readonly", "readonly");
+        });
+        $("#SalePrice").change(function () {
+            $("#TotalPrice").val($("#SaleUnitKG").val() * $("#SalePrice").val());
+            $("#TotalPrice").attr("readonly", "readonly");
+        });
+
+        SaleItems = [];
+        //Add button click function
+        $('#add').click(function () {
+            //Check validation of order item
+            var isValidItem = true;
+
+            if ($('#TruckNumber').val().trim() == 0) {
+                isValidItem = false;
+                $('#TruckNumber').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#TruckNumber').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#Products').val().trim() == 0) {
+                isValidItem = false;
+                $('#Products').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#Products').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if (!($('#SaleUnitBag').val().trim() != '' && !isNaN($('#SaleUnitBag').val().trim()))) {
+                isValidItem = false;
+                $('#SaleUnitBag').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#SaleUnitBag').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if (!($('#SaleUnitKG').val().trim() != '' && !isNaN($('#SaleUnitKG').val().trim()))) {
+                isValidItem = false;
+                $('#SaleUnitKG').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#SaleUnitKG').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if (!($('#SalePrice').val().trim() != '' && !isNaN($('#SalePrice').val().trim()))) {
+                isValidItem = false;
+                $('#SalePrice').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#SalePrice').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if (!($('#TotalPrice').val().trim() != '' && !isNaN($('#TotalPrice').val().trim()))) {
+                isValidItem = false;
+                $('#TotalPrice').siblings('span.error').css('visibility', 'visible');
+            } else {
+                $('#TotalPrice').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            //Add item to list if valid
+            if (isValidItem) {
+                var saleUnitBag = parseFloat($("#SaleUnitBag").val());
+                var saleUnitKg = parseFloat($("#SaleUnitKG").val());
+                if (bag >= saleUnitBag && kg >= saleUnitKg) {
+                    SaleItems.push({
+
+                        TruckNumber: $('#TruckNumber').val().trim(),
+                        //TruckDetailId: $("#TruckNumber option:selected").val(),
+                        ProductName: $("#Products option:selected").text(),
+                        ProductId: $("#Products option:selected").val(),
+                        SaleUnitBag: parseFloat($('#SaleUnitBag').val().trim()),
+                        SaleUnitKG: parseFloat($('#SaleUnitKG').val().trim()),
+                        SalePrice: parseFloat($('#SalePrice').val().trim()),
+                        TotalPrice: parseFloat($('#TotalPrice').val().trim()),
+                        SubTotal: parseFloat($('#SaleUnitKG').val().trim()) * parseFloat($('#SalePrice').val().trim())
+
+                    });
+                }
+                else {
+                    if (bag <= saleUnitBag) {
+                        var status = $("#MessageForExistChekId");
+                        status.html("<font color=red>'<b>" + saleUnitBag + "</b>' Return Purchase Unit Bag is not valid!</font>");
+                    }
+                    else if (kg <= saleUnitKg) {
+                        var message = $("#MessageForExistChekIdforkg");
+                        message.html("<font color=red>'<b>" + saleUnitKg + "</b>' Return Purchase Unit KG is not valid!</font>");
+                    }
+
+                }
+
+                //Clear fields
+                $('#Products').val('').focus();
+                //$('#TruckNumber').val('').focus();
+                $('#SaleUnitBag,#SaleUnitKG,#SalePrice,#TotalPrice,#TruckNumber').val('');
+
+            }
+            //populate order items
+            GeneratedItemsTable();
+
+        });
+
+
+        //function for show added items in table
+        function GeneratedItemsTable() {
+            if (SaleItems.length > 0) {
+                var $table = $('<table id="myTable" class="table table-striped table-hover" width="100%"/>');
+                $table.append('<thead><tr class="success">' +
+                    '<th>Truck Number</th>' +
+                    '<th>Product</th>' +
+                    '<th>Sale Unit(Bag)</th>' +
+                    '<th>Sale Unit(Kg)</th>' +
+                    '<th>Sale Price</th>' +
+                    '<th>Total Price</th>' +
+                    '</tr></thead>');
+
+                var $tbody = $('<tbody/>');
+                $.each(SaleItems, function (i, val) {
+                    var $row = $('<tr class="active"/>');
+                    $row.append($('<td/>').html(val.TruckNumber));
+                    $row.append($('<td/>').html(val.ProductName));
+                    $row.append($('<td/>').html(val.SaleUnitBag));
+                    $row.append($('<td/>').html(val.SaleUnitKG));
+                    $row.append($('<td/>').html(val.SalePrice));
+                    $row.append($('<td/>').html(val.SubTotal.toFixed(2)));
+
+
+                    $tbody.append($row);
+                });
+
+                $table.append($tbody);
+                var Amount = 0;
+                $.each(SaleItems, function (i, val) {
+                    Amount = Amount + val.SubTotal;
+
+
+                });
+
+                $("#SellingAmount").val(Amount);
+
+
+                var sellingAmount = $("#SellingAmount").val();
+                $("#hideid").val(sellingAmount);
+
+                var hideid = $("#hideid").val();
+                var previousDueAmount = $("#PreviousDueAmount").val();
+                var totalAmount = parseFloat(hideid) + parseFloat(previousDueAmount)
+
+                $("#TotalAmount").empty();
+                $("#TotalAmount").val(totalAmount);
+
+
+                $("#PaidAmount").change(function () {
+                    var totalamount = $("#TotalAmount").val();
+                    var PaidAmount = $("#PaidAmount").val();
+                    var AdjustmentAmount = $("#AdjustmentAmount").val();
+                    var currentDueAmount = totalamount - PaidAmount - AdjustmentAmount
+
+                    $("#CurrentDueAmount").empty();
+
+                    $("#CurrentDueAmount").val(currentDueAmount);
+                });
+
+                $("#AdjustmentAmount").change(function () {
+                    var totalamount = $("#TotalAmount").val();
+                    var PaidAmount = $("#PaidAmount").val();
+                    var AdjustmentAmount = $("#AdjustmentAmount").val();
+                    var currentDueAmount = totalamount - PaidAmount - AdjustmentAmount
+
+                    $("#CurrentDueAmount").empty();
+
+                    $("#CurrentDueAmount").val(currentDueAmount);
+                });
+
+
+                //$table.append('<thead><tr><th></th><th></th><th></th><th></th>' +
+                //    '<th></th><th></th><th></th><th></th><th></th><th>' +
+                //    '<label>Total</label>' +
+                //    '</th><th>' +
+                //    '<input type="text" class="form-control" id="TAmount" value="' + Amount.toFixed(2) + '" disabled="true"/>' +
+                //    ' </th></tr></thead>');
+
+
+                //$table.append('<thead><tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th><label>Paid Amount</label></th><th><input type="text" class="form-control" id="PaidAmount" onblur="doMath();" /></th></tr></thead>');
+                //$table.append('<thead><tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th><label>Due Amount</label></th><th><input type="text" class="form-control" id="DueAmount" disabled="true" /></th></tr></thead>');
+
+                $('#SaleItems').html($table);
+            }
+        }
+
+
+        $('#submit').click(function () {
+
+            //validation of order
+            var isAllValid = true;
+            if (SaleItems.length == 0) {
+                $('#SaleItems').html('<span style="color:red;">Please add order items</span>');
+                isAllValid = false;
+            }
+
+            if ($('#PreviousDueAmount').val().trim() == '') {
+                $('#PreviousDueAmount').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#PreviousDueAmount').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#ConsignmentNumber').val().trim() == '') {
+                $('#ConsignmentNumber').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#ConsignmentNumber').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#Customers').val().trim() == '') {
+                $('#Customers').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#Customers').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#OrderNumber').val().trim() == '') {
+                $('#OrderNumber').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#OrderNumber').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#PaymentMethod').val().trim() == '') {
+                $('#PaymentMethod').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#PaymentMethod').siblings('span.error').css('visibility', 'hidden');
+            }
+
+
+            if ($('#SellingDate').val().trim() == '') {
+                $('#SellingDate').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#SellingDate').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#SellingAmount').val().trim() == '') {
+                $('#SellingAmount').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#SellingAmount').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#PaidAmount').val().trim() == '') {
+                $('#PaidAmount').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#PaidAmount').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            if ($('#TotalAmount').val().trim() == '') {
+                $('#TotalAmount').siblings('span.error').css('visibility', 'visible');
+                isAllValid = false;
+            }
+            else {
+                $('#TotalAmount').siblings('span.error').css('visibility', 'hidden');
+            }
+
+            //Save if valid
+            if (isAllValid) {
+                var data = {
+                    ConsignmentNumber: $('#ConsignmentNumber').val().trim(),
+                    SellingDate: $('#SellingDate').val().trim(),
+                    CustomerName: $("#Customers option:selected").text(),
+                    CustomerId: $("#Customers option:selected").val(),
+                    OrderNumber: $('#OrderNumber').val().trim(),
+                    PaymentMethod: $("#PaymentMethod option:selected").val(),
+                    ChequeNumber: $('#ChequeNumber').val().trim(),
+                    TTNumber: $('#TTNumber').val().trim(),
+                    Remarks: $('#Remarks').val().trim(),
+                    PaidAmount: $('#PaidAmount').val().trim(),
+                    CurrentDueAmount: $('#CurrentDueAmount').val().trim(),
+                    AdjustmentAmount: $('#AdjustmentAmount').val().trim(),
+                    SellingAmount: $('#SellingAmount').val().trim(),
+                    TotalAmount: $('#TotalAmount').val().trim(),
+                    PreviousDueAmount: $('#PreviousDueAmount').val().trim(),
+                    SaleDetails: SaleItems
+                }
+                $(this).val('Please wait...');
+                $.ajax({
+                    url: '/Sale/Sale/Save',
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    dataType: "JSON",
+                    contentType: "application/json",
+                    success: function (d) {
+
+                        //check is successfully save to database
+                        if (d.status == true) {
+                            //will send status from server side
+                            alert('Successfully done.');
+                            //clear form
+                            SaleItems = [];
+                            $('#ConsignmentNumber').val('');
+                            $('#SellingDate').val('');
+                            $('#PreviousDueAmount').val('');
+                            $('#TotalAmount').val('');
+                            $('#AdjustmentAmount').val('');
+                            $('#PaidAmount').val('');
+                            $('#PaymentMethod').val('');
+                            $('#SellingAmount').val('');
+                            $('#CurrentDueAmount').val('');
+                            $('#Customers').val('');
+                            $('#Remarks').val('');
+                            $('#SaleItems').empty();
+                        }
+                        else {
+                            alert('Failed');
+                        }
+                        $('#submit').val('Save');
+                        window.location.reload();
+                    },
+                    error: function () {
+                        alert('Error. Please try again.');
+                        $('#submit').val('Save');
+                    }
+                });
+            }
+
+        });
+
+    });
+
+
+
+
+
+    $(function () {
+        $('#SellingDate').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+    });
+
+    $('input[type=date]').each(function () {
+        this.type = "text";
+    });
+
+
+   
+
+    $("#ConsignmentNumber").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: "/Purchase/Purchase/AutoCompleteConsignment",
+                type: "GET",
+                dataType: "json",
+                data: { term: request.term },
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return { label: item, value: item };
+                    }))
+                }
+            })
+        },
+        messages: {
+            noResults: "",
+            results: ""
+        }
+    });
+
+    $("#Customers").change(function () {
+        var id = $("#Customers").val();
+        var json = { id: id };
+        $.ajax({
+            type: "POST",
+            url: "/Sale/Sale/GetCustomerDueAmount",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(json),
+            success: function (data) {
+                $("#PreviousDueAmount").val(data.PreviousDueAmount);
+
+                var previousDueAmount = $("#PreviousDueAmount").val();
+                var sellingAmount = $("#SellingAmount").val();
+                //var totalamount = $("#TotalAmount").val();
+                var PaidAmount = $("#PaidAmount").val();
+                var AdjustmentAmount = $("#AdjustmentAmount").val();
+                $("#hideid").val(sellingAmount);
+                var hideid = $("#hideid").val();
+
+
+                var totalAmount = parseFloat(hideid) + parseFloat(previousDueAmount)
+                var currentDueAmount = totalAmount - PaidAmount - AdjustmentAmount
+
+
+                $("#TotalAmount").empty();
+                $("#CurrentDueAmount").empty();
+
+                $("#TotalAmount").val(totalAmount);
+                $("#CurrentDueAmount").val(currentDueAmount);
+
+
+            },
+        });
+
+    });
+
+    $("#ConsignmentNumber").change(function () {
+        var consignmentNumber = $("#ConsignmentNumber").val();
+        var json = { consignmentNumber: consignmentNumber };
+        $('#Products').empty();
+
+        $.ajax({
+            type: "POST",
+            url: "/Sale/Sale/GetProductByConsainmentNumberForSale",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(json),
+
+            success: function (truck) {
+                $("#Products").append('<option value="0">-Select Product Name-</option>');
+                $.each(truck, function (key, value) {
+                    $("#Products").append('<option value=' + value.ProductId + '>' + value.ProductName + '</option>');
+                });
+            },
+
+        });
+    });
+    $(function () {
+        $("#PaymentMethod").change(function () {
+            if ($(this).val() == "2") {
+                $("#ChequePanel").show();
+                $("#TTPanel").hide();
+            } else if ($(this).val() == "3") {
+                $("#TTPanel").show();
+                $("#ChequePanel").hide();
+            } else {
+                $("#ChequePanel").hide();
+                $("#TTPanel").hide();
+            }
+        });
+
+        $("#SaleUnitBag").keyup(function () {
+            var saleUnitBag = parseFloat($("#SaleUnitBag").val());
+            var productName = $("#Products option:selected").text();//Value entered in the text box
+            var status = $("#MessageForExistChekId"); //DIV object to display the status message
+            var user = $.trim(saleUnitBag);
+            if (user.length >= 0) {
+                $.post("/Sale/Sale/StockHandforBag", { saleUnitBag: saleUnitBag, productName: productName },
+                    function (data) {
+                        bag = parseFloat(data.SaleUnitBag);
+                        if (data.SaleUnitBag > saleUnitBag) {
+                            status.html("<font color=green>'<b>" + data.SaleUnitBag + "</b>' max available for Sale!</font>");
+                        } else {
+                            status.html("<font color=red>'<b>" + saleUnitBag + "</b>' unit bag is not available for Sale!</font>");
+                        }
+                    });
+            } else {
+                status.html("Need more characters...");
+            }
+        });
+
+        $("#SaleUnitKG").keyup(function () {
+            var saleUnitKg = parseFloat($("#SaleUnitKG").val());
+            var productName = $("#Products option:selected").text();
+            var status = $("#MessageForExistChekIdforkg"); //DIV object to display the status message
+            var user = $.trim(saleUnitKg);
+            if (user.length >= 0) {
+                $.post("/Sale/Sale/StockHandforBag", { saleUnitKg: saleUnitKg, productName: productName },
+                    function (data) {
+                        kg = parseFloat(data.SaleUnitKG);
+                        if (data.SaleUnitKG >= saleUnitKg) {
+                            status.html("<font color=green>'<b>" + data.SaleUnitKG + "</b>' max available for Sale!</font>");
+                        } else {
+                            status.html("<font color=red>'<b>" + saleUnitKg + "</b>' unit kg is not available for Sale!</font>");
+                        }
+                    });
+            } else {
+                status.html("Need more characters...");
+            }
+        });
+
+    });
+
+</script>
+
+<style>
+    /*Adding some css for looks good*/
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+
+    /*css for table*/
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 1px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+
+    #hideid {
+        display: none;
+    }
+</style>
+
+
+
+@*//number check*@
+
+<script type="text/javascript">
+    function IsDouble(evt) {
+        evt = (evt) ? evt : window.event
+        var charCode = (evt.which) ? evt.which : evt.keyCode
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+            return false
+        }
+        else if (charCode == 13) {
+            return false;
+        }
+        status = ""
+        return true
+    }
+</script>

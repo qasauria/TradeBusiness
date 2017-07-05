@@ -1,0 +1,74 @@
+﻿@model STEnterprise.Areas.Sale.Models.Country
+@{
+    ViewBag.Title = "Country";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 style="color: black;text-align:center; padding:10px">Update Country Information</h3>
+<hr />
+
+@using (Html.BeginForm("Edit", "Country", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    if (Model != null && Model.CountryId > 0)
+    {
+        @Html.HiddenFor(b => b.CountryId)
+    }
+    @Html.Label(" ", new { @class = " col-md-offset-4", id = "MessageForExistChekId" })
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.CountryName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.CountryName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.CountryName, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.IsActive, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(a => a.IsActive, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Active", Value = "true" },
+                    new SelectListItem { Text = "Inactive", Value = "false" }
+                }, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.IsActive, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <input type="submit" value="Update" class="btn btn-primary"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class=" col-sm-offset-3 col-sm-2 ">
+            <a class="popup btn btn-primary" href="/Sale/Country/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#CountryName").keyup(function () {
+            var name = $("#CountryName").val(); //Value entered in the text box
+            var status = $("#MessageForExistChekId"); //DIV object to display the status message
+            var user = $.trim(name);
+            if (user.length >= 3) {
+                status.html("Checking....") //While our Thread works, we will show some message to indicate the progress
+                //jQuery AJAX Post request
+                $.post("/Country/GetCountryNameIsExist", { CountryName: name },
+                            function (data) {
+                                if (data == true) {
+                                    status.html("<font color=green>'<b>" + name + "</b>' is available!</font>");
+                                } else {
+                                    status.html("<font color=red>'<b>" + name + "</b>' is not available!</font>");
+                                }
+                            });
+            } else {
+                status.html("Need more characters...");
+            }
+        });
+    });
+</script>

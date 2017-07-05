@@ -1,0 +1,172 @@
+﻿
+@*@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Accounts.Models.AccountHead>
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Accounts/AccountHead/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Account Head</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.AccountCode).Titled("Account Code").Sortable(true).Filterable(true);
+    columns.Add(a => a.AccountName).Titled("Account Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.AccountType).Titled("Account Type").Sortable(true).Filterable(true);
+    columns.Add(a => a.Description).Titled("Description").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.AccountHeadId, @class = "btn btn-primary,GoPopUp" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.AccountHeadId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>*@
+
+
+@using System.Web.UI.WebControls
+@using System.Web.UI.WebControls.WebParts
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "Account Head";
+
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+@* DataTable - CSS *@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+@* DataTable - JS *@
+<script src="~/Scripts/jquery-3.1.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+
+<div style="width:90%; margin:0 auto" class="tablecontainer table-responsive">
+    <a class="popup btn btn-primary" href="/Accounts/AccountHead/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Account Head</a>
+    <table id="myDatatable" class="table table-striped table-bordered table-hover table-condensed" style="width: 98%">
+        <thead>
+            <tr>
+                <th>Account Code</th>
+                <th>Account Name</th>
+                <th>Account Type</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script>
+        $(document).ready(function() {
+            var oTable = $('#myDatatable').DataTable({
+                "ajax": {
+                    "url": '/AccountHead/GetAccountHead',
+                    "type": "get",
+                    "datatype": "json"
+                },
+
+                "columns": [
+                    { "data": "AccountCode" },
+                    { "data": "AccountName" },
+                    { "data": "AccountType" },
+                    { "data": "Description" },
+                    { "data": "UserStatus" },
+                    {
+                        "data": "AccountHeadId",
+                        "width": "50px",
+                        "render": function(data) {
+                            return '<a class="popup" href="/Accounts/AccountHead/Edit/' + data + '">Edit</a>';
+                        }
+                    },
+                    {
+                        "data": "AccountHeadId",
+                        "width": "50px",
+                        "render": function(data) {
+                            return '<a class="popup" href="/Accounts/AccountHead/Delete/' + data + '">Delete</a>';
+                        }
+                    }
+                ]
+            });
+            $('.tablecontainer').on('click', 'a.popup', function(e) {
+                e.preventDefault();
+                OpenPopup($(this).attr('href'));
+            });
+
+            function OpenPopup(pageUrl) {
+                var $pageContent = $('<div/>');
+                $pageContent.load(pageUrl, function() {
+                    $('#popupForm', $pageContent).removeData('validator');
+                    $('#popupForm', $pageContent).removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse('form');
+
+                });
+
+                $dialog = $('<div class="popupWindow" style="overflow:auto; padding:10px 30px;"></div>')
+                    .html($pageContent)
+                    .dialog({
+                        draggable: true,
+                        autoOpen: false,
+                        resizable: true,
+                        model: true,
+
+                        title: '@ViewBag.Title',
+                        height: 630,
+                        width: 600,
+                        close: function () {
+
+                            $dialog.dialog('destroy').remove();
+                        }
+                    });
+
+                $('.popupWindow').on('submit', '#popupForm', function(e) {
+                    var url = $('#popupForm')[0].action;
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#popupForm').serialize(),
+                        success: function(data) {
+                            if (data.status) {
+                                $dialog.dialog('close');
+                                oTable.ajax.reload();
+                            }
+                        }
+                    });
+
+                    e.preventDefault();
+                });
+
+                $dialog.dialog('open');
+            }
+        })
+</script>

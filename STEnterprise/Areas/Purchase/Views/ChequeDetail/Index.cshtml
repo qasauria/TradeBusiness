@@ -1,0 +1,43 @@
+﻿
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Purchase.Models.ChequeDetail>
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Purchase/ChequeDetail/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Cheque Detail</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.ChequeIssuedByShow).Titled("Cheque Issued By Show").Sortable(true).Filterable(true);
+    columns.Add(a => a.OwnerName).Titled("Owner Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.ChequeNumber).Titled("Cheque Number").Sortable(true).Filterable(true);
+    columns.Add(a => a.BankName).Titled("Bank Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.ChequeAmount).Titled("Cheque Amount").Sortable(true).Filterable(true);
+    columns.Add(a => a.ChequeIssueDateShow).Titled("Cheque Issue Date").Sortable(true).Filterable(true);
+    columns.Add(a => a.ChequeSubmitDateShow).Titled("Cheque Submit Date").Sortable(true).Filterable(true);
+    columns.Add(a => a.ChequeMaturedDateShow).Titled("Cheque Matured Date").Sortable(true).Filterable(true);
+    columns.Add(a => a.ChequeStatusShow).Titled("ChequeStatus").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.ChequeDetailId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.ChequeDetailId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>

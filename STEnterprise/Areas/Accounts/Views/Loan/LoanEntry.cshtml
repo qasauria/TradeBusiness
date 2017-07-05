@@ -1,0 +1,142 @@
+﻿@using System.Web.UI.WebControls 
+@model  STEnterprise.Areas.Accounts.Models.Loan
+@{
+    ViewBag.Title = "Loan Entry";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align:center; padding-right:150px">Loan Entry</h2>
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+@using (Html.BeginForm("LoanEntry", "Loan", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Raw(TempData["msg"]);
+    if (Model != null && Model.LoanId > 0)
+    {
+        @Html.HiddenFor(b => b.LoanId)
+    }
+    if (ViewBag.error !=null)
+    {
+        <h2>@ViewBag.error</h2>
+    }
+    <table class="table">
+        <tr>
+            <td class="col-md-2">
+                <label>Transaction Date</label>
+            </td>
+            <td class="col-md-5">
+                <input type="text" id="Date" name="Date" class="form-control datepicker" value="@DateTime.Now.ToString("dd/MMMM/yyyy")" />
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label>Bank Name</label>
+            </td>
+            <td class="col-md-5">
+                @Html.DropDownListFor(
+            x => x.BankName,
+            new SelectList(Model.BankNameList, "BankDetailId", "BankName"),
+            "--Select Bank Name--", new { @class = "form-control" }
+            )   
+               
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label>Account Number</label>
+            </td>
+            <td class="col-md-5">
+                <input type="text" name="AccountNumber" id="AccountNumber" class="AccountNumber form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label> Amount</label>
+            </td>
+            <td class="col-md-5"> 
+                @Html.TextBoxFor(b => b.Amount, new { @class = "form-control", id = "Amount", @onkeypress = "return IsDouble(event);" })
+            </td>
+
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label>Remarks</label>
+            </td>
+            <td class="col-md-5">
+                @Html.TextBoxFor(b => b.Remarks, new { @class = "form-control", id = "Remarks" })
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                
+            </td>
+            <td class="col-md-5">
+                <input id="submit" type="submit" value="Save" class="btn btn-success" style="padding: 10px 20px" />
+                @if (ViewBag.Message != null)
+                {
+                    <h2 style="color:green">@ViewBag.Message</h2>
+                }
+                else
+                {
+                    <h2 style="color:red">@ViewBag.Message</h2>
+                }
+            </td>
+        </tr>
+    </table>
+
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#Date').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+        });
+
+        $('input[type=date]').each(function () {
+            this.type = "text";
+        });
+
+        $("#BankName").change(function () {
+            var BankName = $("#BankName").val();
+            $("#AccountNumber").empty();
+                    var json = {
+                        BankName: BankName
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetAccountNumberByBankName", "BankBook")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            $("#AccountNumber").val(data.AccountNumber);
+                        }
+                    });
+
+                });
+    });
+</script>
+<script type="text/javascript">
+         function IsDouble(evt) {
+             evt = (evt) ? evt : window.event
+             var charCode = (evt.which) ? evt.which : evt.keyCode
+
+             if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+                 return false
+             }
+             else if (charCode == 13) {
+                 return false;
+             }
+             status = ""
+             return true
+         }
+</script>
+

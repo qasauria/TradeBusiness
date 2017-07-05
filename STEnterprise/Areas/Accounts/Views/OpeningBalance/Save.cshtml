@@ -1,0 +1,130 @@
+﻿
+@model STEnterprise.Areas.Accounts.Models.OpeningBalance
+
+@{
+    ViewBag.Title = "Opening Balance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+<h3 style="padding-left:220px">Opening Balance Entry</h3>
+<hr />
+
+@using (Html.BeginForm("Save", "OpeningBalance", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    if (Model != null && Model.OpeningBalanceId > 0)
+    {
+        @Html.HiddenFor(d => d.OpeningBalanceId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(d => d.OpeningBalanceDate, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.TextBoxFor(d => d.OpeningBalanceDate, new { @class = "form-control", id = "OpeningBalanceDate" })
+            @Html.ValidationMessageFor(d => d.OpeningBalanceDate, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(d => d.AccountType, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.DropDownListFor(a => a.AccountType, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "--Please Select--"},
+                    new SelectListItem { Text = "Customer", Value = "Customer" },
+                    new SelectListItem { Text = "Supplier", Value = "Supplier" },
+                     new SelectListItem { Text = "Expense", Value = "Expense" }
+                },new { @class = "form-control"})
+            @Html.ValidationMessageFor(d => d.AccountType, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(d => d.PartyId, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            <select name="PartyId" id="PartyId" class="PartyId form-control">
+                <option value="0">--Select Item--</option>
+            </select>
+            @Html.ValidationMessageFor(d => d.PartyId, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(d => d.Amount, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.TextBoxFor(b => b.Amount, new { @class = "form-control", id = "Amount", @onkeypress = "return IsDouble(event);" })
+            @Html.ValidationMessageFor(d => d.Amount, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(d => d.Remarks, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.TextAreaFor(b => b.Remarks, new { @class = "form-control" })
+            @Html.ValidationMessageFor(d => d.Remarks, "", new { @class = "text-danger", @style = "color:red" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+}
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#OpeningBalanceDate').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+        });
+
+        $('input[type=date]').each(function () {
+            this.type = "text";
+        });
+
+        $("#AccountType").change(function () {
+           
+            var acc = $("#AccountType").val();
+           
+        //    $("#PartyId").empty();
+            var json = {
+                AccountType: acc
+            };
+           //  alert(json.AccountType);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPartyNameByAccountType", "OpeningBalance")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function(data) {
+                    //     $("#PartyId").append('<option value="0">Select Item</option>');
+                    $.each(data, function(key, value) {
+                        $("#PartyId").append('<option value=' + value.PartyId + '>' + value.PartyName + '</option>');
+
+                    });
+                }
+                
+
+        });
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    function IsDouble(evt) {
+        evt = (evt) ? evt : window.event
+        var charCode = (evt.which) ? evt.which : evt.keyCode
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+            return false
+        }
+        else if (charCode == 13) {
+            return false;
+        }
+        status = ""
+        return true
+    }
+</script>

@@ -1,0 +1,374 @@
+﻿
+@using CrystalDecisions.Web
+@model STEnterprise.Models.ReportModel
+
+@{
+    ViewBag.Title = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+
+
+
+@using (Html.BeginForm("Index", "Report", FormMethod.Post, new { @class = "form-horizontal" , target = "_blank" }))
+{
+
+    <div class="form-group">
+        @Html.LabelFor(ui => ui.ReportType, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.DropDownList("ReportType", new List<SelectListItem>()
+            {
+                new SelectListItem {Text = "-Select Report Type-", Value = ""},
+                new SelectListItem {Text = "Daily Buy Report", Value = "DailyBuyReport"},
+                new SelectListItem {Text = "Daily Local Sale Report", Value = "DailyLocalSaleReport"},
+                new SelectListItem {Text = "Daily Partly Ledger(Buy/Sale)", Value = "DailyPartlyLedger"},
+                new SelectListItem {Text = "Consignment Wise Sales Report", Value = "ConsignmentWiseSale"},
+                new SelectListItem {Text = "Daily Stock Report", Value = "DailyStockReport"},
+                new SelectListItem {Text = "Daily Due Statement", Value = "DailyDueStatement"},
+                new SelectListItem {Text = "Daily Pay Statement", Value = "DailyPayStatement"},
+                //new SelectListItem {Text = "Daily Bank Statement", Value = "DailyBankStatement"},
+                new SelectListItem {Text = "Daily Foreign Sale Report", Value = "DailyForeignSaleReport"},
+                new SelectListItem {Text = "Daily Total Production Cost", Value = "DailyTotalProductionCost"},
+                new SelectListItem {Text = "Sales (Ledger Account)", Value = "SalesLedgerAccount"},
+                new SelectListItem {Text = "Purchase (Ledger Account)", Value = "PurchaseLedgerAccount"},
+                new SelectListItem {Text = "Cheque Payment", Value = "ChequePayment"},
+                new SelectListItem {Text = "Cheque Received", Value = "ChequeReceived"},
+                new SelectListItem {Text = "Cons.wise Truck Fare With Advance", Value = "ConsignmentWiseTruckFare"},
+                new SelectListItem {Text = "Daily Total Cost Every Subject", Value = "DailyTotalCostEverySubject"},
+                new SelectListItem {Text = "Buyer Detail", Value = "BuyerDetail"}
+
+            }, new {@class = "form-control"})
+            @Html.ValidationMessageFor(b => b.ReportType,"", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+
+    <hr />
+
+
+
+
+    <div class="form-group" style="display: none;" id="CNumber">
+        @Html.LabelFor(d => d.ConsignmentNumber, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.TextBoxFor(d => d.ConsignmentNumber, new {@class = "form-control"})            
+        </div>
+    </div>
+
+
+    <div class="form-group" style="display: none;" id="Date">
+        @Html.LabelFor(d => d.FromDate, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-1">
+            @Html.TextBoxFor(d => d.FromDate, new {@class = "form-control", @style = "width:120px;" ,value=DateTime.Now})
+            @Html.ValidationMessageFor(d=> d.FromDate, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    
+        @Html.LabelFor(d => d.ToDate, new {@class = "control-label col-sm-2", @style = "width:70px;" })
+        <div class="col-sm-1">
+            @Html.TextBoxFor(d => d.ToDate, new {@class = "form-control", @style = "width:120px;" ,value = DateTime.Now })
+            @Html.ValidationMessageFor(d => d.ToDate, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+     
+
+    <div class="form-group" style="display: none;" id="Supplier">
+        @Html.LabelFor(a => a.SupplierId, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.DropDownListFor(a => a.SupplierId,new SelectList(@ViewBag.supplierList, "SupplierId", "SupplierName"),
+            "--Select Supplier--", new { @class = "form-control" }
+            )
+            
+        </div>
+    </div>
+
+    <div class="form-group" style="display: none;" id="Product">
+        @Html.LabelFor(a => a.ProductId, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.DropDownListFor(a =>a.ProductId, new SelectList(@ViewBag.productList, "ProductId", "ProductName"),
+                "--Select Product--", new {@class = "form-control"}
+                )
+           
+        </div>
+    </div>
+
+    <div class="form-group" style="display: none;" id="Customer">
+        @Html.LabelFor(a => a.CustomerId, new {@class = "control-label col-sm-2"})
+        <div class="col-sm-3">
+            @Html.DropDownListFor(a => a.CustomerId, new SelectList(@ViewBag.customerList, "CustomerId", "CustomerName"),
+                "--Select Customer--", new {@class = "form-control"}
+                )
+
+        </div>
+    </div>
+
+    <div class="form-group" style="display: none;" id="Country">
+        @Html.LabelFor(a => a.CountryId, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            @Html.DropDownListFor(a => a.CountryId, new SelectList(@ViewBag.countryList, "CountryId", "CountryName"),
+                "--Select Country--", new { @class = "form-control" }
+                )
+
+        </div>
+    </div>
+
+    <div class="form-group" style="display: none;" id="TNumber">
+        @Html.LabelFor(a => a.TruckDetailId, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-3">
+            <select id="TruckNumber" class="form-control">
+                <option value="0">select truck number</option>
+            </select>
+
+        </div>
+    </div>
+
+    
+
+
+            <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">Preview</button>
+        </div>
+
+    </div>
+
+
+}
+
+<script>
+    $(function () {
+        $('#FromDate').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+        $('#ToDate').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+    });
+
+    $('input[type=date]').each(function () {
+        this.type = "text";
+    });
+
+    $(document).ready(function () {
+
+        $("#ConsignmentNumber").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Purchase/Purchase/AutoCompleteConsignment",
+                    type: "GET",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "",
+                results: ""
+            }
+        });
+
+
+        $("#ConsignmentNumber").change(function () {
+            var consignmentNumber = $("#ConsignmentNumber").val();
+            var json = { consignmentNumber: consignmentNumber };
+            $('#TruckNumber').empty();
+
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/Purchase/GetTruckByConsignment",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+
+                success: function (truck) {
+                    $.each(truck, function (key, value) {
+                        $("#TruckNumber").append('<option value=' + value.TruckDetailId + '>' + value.TruckNumber + '</option>');
+                    });
+                },
+
+            });
+        });
+
+        
+   
+        $("#ReportType").change(function () {
+
+            var reportType = $("#ReportType").val();
+            if (reportType == 'DailyBuyReport') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").show();
+                $("#Product").show();
+                //$("#Customer").show();
+                $("#TNumber").show();
+                $("#Country").hide();
+                
+            }
+
+            else if (reportType == 'DailyLocalSaleReport') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").show();
+                $("#Customer").show();
+                $("#TNumber").show();
+                $("#Country").hide();
+
+            }
+            else if (reportType == 'ConsignmentWiseSale') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+
+            }
+
+            else if (reportType == 'DailyStockReport') {
+                $("#CNumber").hide();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").show();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+
+            }
+
+            else if (reportType == 'DailyDueStatement') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").show();
+                $("#Product").hide();
+                $("#Customer").show();
+                $("#TNumber").hide();
+                $("#Country").hide();
+
+            }
+
+            else if (reportType == 'DailyPayStatement') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").show();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+
+            }
+
+            else if (reportType == 'DailyForeignSaleReport') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").show();
+                $("#TNumber").hide();
+                $("#Country").show();
+
+            }
+
+            else if (reportType == 'DailyPartlyLedger') {
+                $("#CNumber").hide();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+
+            }
+            else if (reportType == 'SalesLedgerAccount') {
+                $("#CNumber").hide();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'PurchaseLedgerAccount') {
+                $("#CNumber").hide();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'DailyTotalProductionCost') {
+                $("#CNumber").hide();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'ChequePayment') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'ChequeReceived') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'ConsignmentWiseTruckFare') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'DailyTotalCostEverySubject') {
+                $("#CNumber").hide();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+            else if (reportType == 'BuyerDetail') {
+                $("#CNumber").show();
+                $("#Date").show();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").show();
+                $("#TNumber").hide();
+                $("#Country").show();
+            }
+            else {
+                $("#CNumber").hide();
+                $("#Date").hide();
+                $("#Supplier").hide();
+                $("#Product").hide();
+                $("#Customer").hide();
+                $("#TNumber").hide();
+                $("#Country").hide();
+            }
+          
+            
+
+        });
+
+
+
+    });
+
+</script>
+
+
+

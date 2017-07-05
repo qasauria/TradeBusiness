@@ -1,0 +1,37 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Models.RoleInfo>
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/RoleInfo/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Role Info</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.RoleName).Titled("Role Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.RoleId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.RoleId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>
+

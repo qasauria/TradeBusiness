@@ -1,0 +1,35 @@
+﻿
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Inventory.Models.Measurement>
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Inventory/Measurement/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Measurement</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.MeasurementName).Titled("Measurement Name").Sortable(true).Filterable(true);    
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.MeasurementId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.MeasurementId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>

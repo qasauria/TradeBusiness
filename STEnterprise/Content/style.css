@@ -1,0 +1,163 @@
+﻿
+/*Footer CSS*/
+
+.row.jpftkm {
+    position: fixed;
+    bottom: 0;
+    background: #a4a5a7;
+    color: #fff;
+    text-align: center;
+    width: 100%;
+    padding: 10px 0;
+    right: 0;
+    left: 0;
+}
+
+/*Footer CSS END*/
+
+
+
+
+
+/*Responsive CSS */
+
+@media only screen and (min-width: 1665px) and (max-width: 1800px) {
+    .col-md-10.jpkm1 {
+    width: 80%;
+    margin-left: 50px;
+}
+}
+@media only screen and (max-width: 1664px) {
+    .col-md-10.jpkm1 {
+        width: 80%;
+        margin-left: 43px;
+    }
+}
+
+@media only screen and (min-width: 1500px) and (max-width: 1663px) {
+    .col-md-10.jpkm1 {
+    width: 78%;
+    margin-left: 50px;
+}
+}
+
+@media only screen and (min-width: 1351px) and (max-width: 1499px) {
+    .col-md-10.jpkm1 {
+    width: 75%;
+    margin-left: 100px;
+}
+}
+
+@media only screen and (max-width: 1350px) {
+    .col-md-10.jpkm1 {
+        width: 75%;
+        margin-left: 97px;
+    }
+}
+@media only screen and (min-width: 1265px) and (max-width: 1349px) {
+    .col-md-10.jpkm1 {
+    width: 75%;
+    margin-left: 100px;
+}
+}
+
+@media only screen and (max-width: 1264px) {
+    .col-md-10.jpkm1 {
+        width: 74%;
+        margin-left: 111px;
+    }
+}
+@media only screen and (min-width: 1190px) and (max-width: 1263px) {
+    .col-md-10.jpkm1 {
+    width: 74%;
+    margin-left: 100px;
+}
+}
+
+
+@media only screen and (min-width: 1025px) and (max-width: 1189px) {
+    .col-md-10.jpkm1 {
+    width: 70%;
+    margin-left: 132px;
+}
+}
+
+@media only screen and (max-width: 1024px) {
+    .col-md-10.jpkm1 {
+    width: 69%;
+    margin-left: 148px;
+}
+}
+
+
+@media only screen and (min-width: 770px) and (max-width: 999px) {
+    .col-md-10.jpkm1 {
+    width: 60%;
+    margin-left: 335px;
+}
+}
+@media only screen and (min-width: 768px) and (max-width: 769px) {
+
+    .col-md-10.jpkm1 {
+        width: 58%;
+        margin-left: 322px;
+    }
+    
+}
+
+@media only screen and (max-width: 766px) {
+    .col-md-10.jpkm1 {
+    width: 96%;
+    margin-left: 15px;
+}
+    
+}
+
+
+
+
+
+
+
+@media only screen and (max-width: 767px) {
+   
+    .jpnav .nav>li {
+    position: relative;
+    display: inline-block;
+    right: -6px;
+}
+    .jpnav .navbar-nav {
+    margin: -2px 0px;
+    float: right;
+}
+
+    .navbar.jpnav {
+        min-height: 38px;
+        margin-bottom: 2px;
+    }
+}
+
+/*Responsive CSS END*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

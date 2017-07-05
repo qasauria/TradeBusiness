@@ -1,0 +1,33 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var data = ViewBag.data;
+    var a = ViewBag.TransactionId;
+}
+<h1 style="padding-left:350px">Bank Book Privew</h1>
+<table>
+    <tr>
+        <td><h3>Transaction Id   :</h3></td>
+        <td><h3>@ViewBag.TransactionId</h3></td>
+    </tr>
+</table>
+<table class="table table-responsive">
+    <tr>
+        <th>Transaction Date</th>
+        <th>Bank Name</th>
+        <th>Account Number</th>
+        <th>Debite Amount</th>
+        <th>Credit Amount</th>
+
+    </tr>
+    @foreach (var d in data)
+    {
+        <tr>
+            <td>@d.TransactionDateShow</td>
+            <td>@d.BankName</td>
+            <td>@d.AccountNumber</td>
+            <td>@d.DebitAmount</td>
+            <td>@d.CreditAmount</td>
+        </tr>
+    }
+</table>

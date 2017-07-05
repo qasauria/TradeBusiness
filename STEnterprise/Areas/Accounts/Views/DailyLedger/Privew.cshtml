@@ -1,0 +1,35 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var data = ViewBag.data;
+    var a = ViewBag.TransactionId;
+}
+<h1 style="padding-left:350px">Daily Ledger Privew</h1>
+<table>
+    <tr>
+    <td><h3>Transaction Id   :</h3></td>
+        <td><h3>@ViewBag.TransactionId</h3></td>
+    </tr>
+</table>
+<table class="table table-responsive">
+    <tr>
+        <th>Transaction Date</th>
+        <th>Customer Name</th>
+        <th>Supplier Name</th>
+        <th>Expense Type</th>
+        <th>Debite Amount</th>
+        <th>Credit Amount</th>
+
+    </tr>
+    @foreach (var d in data)
+    {
+        <tr>
+            <td>@d.TransactionDateShow</td>
+            <td>@d.CustomerName</td>
+            <td>@d.SupplierName</td>
+            <td>@d.ExpenseType</td>
+            <td>@d.DebitAmount</td>
+            <td>@d.CreditAmount</td>
+        </tr>
+    }
+</table>

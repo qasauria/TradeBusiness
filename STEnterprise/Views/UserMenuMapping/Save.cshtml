@@ -1,0 +1,196 @@
+﻿@model IEnumerable<STEnterprise.Models.Navigation>
+
+@{
+    ViewBag.Title = "User Menu Mapping";
+}
+
+<h3>User Menu Mapping</h3>
+<h4>Here you will select menu for this user</h4>
+<hr />
+
+@TempData["Message"]
+
+<script src="~/Scripts/jquery-3.1.1.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        //clicking the parent checkbox should check or uncheck all child checkboxes
+        $(".parent").click(function() {
+
+                $(this).closest('fieldset').find('.child').prop('checked', this.checked);
+            }
+        );
+        //clicking the last unchecked or checked checkbox should check or uncheck the parent checkbox
+        $('.child').click(
+            function() {
+                if (this.checked == true) {
+                    var flag = true;
+                    $(this).closest('fieldset').find('.child').one(
+                        function() {
+                            if (this.CheckUncheckChildren == true)
+                                flag = false;
+                        }
+                    );
+                    $(this).closest('fieldset').find('.parent').prop('checked', flag);
+                }
+            }
+        );
+    });
+</script>
+@*<link href="~/Content/TreeView/css/style.css" rel="stylesheet"/>*@
+
+<div style="width: 80%;">
+    @using (Html.BeginForm("Save", "UserMenuMapping", FormMethod.Get, new { userDetailId = 0, roleId = 0 }))
+    {
+        <div class="form-group row">
+            @Html.Label("User Name", new {@class = "control-label col-sm-2"})
+            <div class="col-sm-3">
+                @Html.DropDownList("UserDetailId", new SelectList(ViewBag.UserInfo, "UserDetailId", "Username"),
+                    "--Select User Name--", new {@class = "form-control"}
+                    )
+                @Html.ValidationMessage("UserDetailId", new {@class = "text-danger", @style = "color:red"})
+            </div>
+        </div>
+
+        <div class="form-group row">
+            @Html.Label("Role Name", new { @class = "control-label col-sm-2" })
+            <div class="col-sm-3">
+                @Html.DropDownList("RoleId", new SelectList(ViewBag.RoleInfo, "RoleId", "RoleName"),
+                    "--Select Role Name--", new { @class = "form-control", onchange = "this.form.submit()" }
+                    )
+                @Html.ValidationMessage("RoleId", new { @class = "text-danger", @style = "color:red" })
+            </div>
+            @*<button type="submit" id="Assign" class="btn btn-default">Assign</button>*@
+        </div>
+
+    }
+    
+    <div class="form-group row">
+        <label for="treeview" class="col-md-2"></label>
+        <div class="col-md-10">
+            @*<div class="treeview hover">
+                <ul>
+                    <li>
+                        <input type="checkbox" id="cb-2">
+                        <label for="cb-2">
+                            <span>magna aliquyam</span>
+                        </label>
+                        <ul>
+                            <li><span>erat sed</span></li>
+                            <li><span>diam voluptua</span></li>
+                            <li><span>At vero eos</span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>*@
+
+            @foreach (var item in Model)
+            {
+                if (item.ParentId != null || item.HasSubMenu.Equals(true))
+                {
+                    <fieldset>
+
+                        @if (item.ParentId == null)
+                        {
+                            <dt>
+                                @if (item.IsActive.Equals(true))
+                                {
+                                    @Html.CheckBox(item.MenuName, true, new {@value = item.MenuId, @class = "parent"})<span>&nbsp;</span>
+                                    @item.MenuName
+                                    <br/>
+                                }
+                                else
+                                {
+                                    @Html.CheckBox(item.MenuName, false, new {@value = item.MenuId, @class = "parent"})<span>&nbsp;</span>
+                                    @item.MenuName
+                                    <br/>
+                                }
+                            </dt>
+                        }
+
+                        @foreach (var subItem in Model)
+                        {
+                            if (item.MenuId == subItem.ParentId)
+                            {
+
+                                <dd style="margin-left: 22px;">
+                                    @if (subItem.IsActive.Equals(true))
+                                    {
+                                        @Html.CheckBox(subItem.MenuName, true, new {@value = subItem.MenuId, @class = "child"})<span>&nbsp;</span>
+                                        @subItem.MenuName
+                                        <br/>
+                                    }
+                                    else
+                                    {
+                                        @Html.CheckBox(subItem.MenuName, false, new {@value = subItem.MenuId, @class = "child"})<span>&nbsp;</span>
+                                        @subItem.MenuName
+                                        <br/>
+                                    }
+                                </dd>
+
+                            }
+                        }
+
+                    </fieldset>
+                }
+                else
+                {
+                    if (item.ParentId == null)
+                    {
+                        if (item.IsActive.Equals(true))
+                        {
+                            @Html.CheckBox(item.MenuName, true, new {@value = item.MenuId})<span>&nbsp;</span>
+                            @item.MenuName
+                            <br/>
+                        }
+                        else
+                        {
+                            @Html.CheckBox(item.MenuName, false, new {@value = item.MenuId})<span>&nbsp;</span>
+                            @item.MenuName
+                            <br/>
+                        }
+                    }
+                }
+            }
+            <br/>
+
+            @if (Model.Count() > 0)
+            {
+                <input type="button" id="AssignUserMenu" value="Save" onclick="restartall()" class="btn btn-default">
+            }
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $('#AssignUserMenu').on('click', function() {
+            var prices = [];
+            var roleId = $('#RoleId').val();
+            var userId = $('#UserDetailId').val();
+            $('input:checked').each(function() {
+
+                prices.push($(this).attr("value"));
+            });
+            $.ajax({
+                url: "/UserMenuMapping/Save",
+                type: "POST",
+                data: { menuId: prices, roleId: roleId, userId: userId },
+                dataType: "json",
+                traditional: true,
+                success: function (d) {
+                    if (d.status == true) {
+                        alert("Assign Successfully");
+                        location.reload();
+                    } else {
+                        alert('Error. Please try again.');
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+@*<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src="js/index.js"></script>*@

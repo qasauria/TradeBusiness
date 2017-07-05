@@ -1,0 +1,44 @@
+﻿
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Employee.Models.EmployeeDetail>
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Employee/EmployeeDetail/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Employee Detail</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.EmployeeName).Titled("Employee Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.PresentAddress).Titled("Present Address").Sortable(true).Filterable(true);
+    columns.Add(a => a.PermanentAddress).Titled("Permanent Address").Sortable(true).Filterable(true);
+    columns.Add(a => a.DesignationName).Titled("Designation Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.Phone).Titled("Phone").Sortable(true).Filterable(true);
+    columns.Add(a => a.Email).Titled("Email").Sortable(true).Filterable(true);
+    columns.Add(a => a.Age).Titled("Age").Sortable(true).Filterable(true);
+    columns.Add(a => a.HireDate).Titled("Hire Date").Sortable(true).Filterable(true);
+    columns.Add(a => a.NationalId).Titled("National Id").Sortable(true).Filterable(true);
+    columns.Add(a => a.MonthlySalary).Titled("Monthly Salary").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.EmployeeId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.EmployeeId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>

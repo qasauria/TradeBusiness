@@ -1,0 +1,43 @@
+﻿
+@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Admin.Models.CompanyDetail>
+
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Admin/CompanyDetail/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Company Detail</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.CompanyName).Titled("Company Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.Logo).Titled("Logo").Sortable(true).Filterable(true);
+    columns.Add(a => a.Address).Titled("Address").Sortable(true).Filterable(true);
+    columns.Add(a => a.Phone).Titled("Phone").Sortable(true).Filterable(true);
+    columns.Add(a => a.Fax).Titled("Fax").Sortable(true).Filterable(true);
+    columns.Add(a => a.Email).Titled("Email").Sortable(true).Filterable(true);
+    columns.Add(a => a.TinCertificate).Titled("Tin Certificate").Sortable(true).Filterable(true);
+    columns.Add(a => a.VatRegNumber).Titled("Tin Certificate").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.CompanyId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    columns.Add()
+   .Encoded(false)
+   .Sanitized(false)
+   .SetWidth(30)
+   .RenderValueAs(a => Html.ActionLink("Delete", "Delete", new { id = a.CompanyId })).Titled("Delete");
+}).WithPaging(10).Sortable(true)
+
+</div>
+

@@ -1,0 +1,42 @@
+﻿@using GridMvc.Html
+@model IEnumerable<STEnterprise.Areas.Employee.Models.SalaryDetail>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+
+
+<div class="code-cut">
+    <a class="popup btn btn-primary" href="/Employee/SalaryDetail/Save/0" style="margin-bottom:20px; margin-top:20px;">Add New Salary Details</a>
+    @Html.Grid(Model).Columns(columns =>
+{
+    columns.Add(a => a.EmployeeName).Titled("Employee Name").Sortable(true).Filterable(true);
+    columns.Add(a => a.DesignationName).Titled("Designation").Sortable(true).Filterable(true);
+    columns.Add(a => a.MonthToBePaid).Titled("Month To Be Paid").Sortable(true).Filterable(true);
+    columns.Add(a => a.MonthlySalary).Titled("Monthly Salary").Sortable(true).Filterable(true);
+    columns.Add(a => a.AdvancedPayment).Titled("Advanced Payment").Sortable(true).Filterable(true);
+    columns.Add(a => a.WorkingDays).Titled("Working Days").Sortable(true).Filterable(true);
+    columns.Add(a => a.PerDaySalary).Titled("Per Day Salary").Sortable(true).Filterable(true);
+    columns.Add(a => a.AbsentDays).Titled("Absent Days").Sortable(true).Filterable(true);
+    columns.Add(a => a.AbsentWisePerDayAmount).Titled("Absent Wise Per DayAmount").Sortable(true).Filterable(true);
+    columns.Add(a => a.PayableSalary).Titled("Payable Salary").Sortable(true).Filterable(true);
+    columns.Add(a => a.PaidSalary).Titled("Paid Salary").Sortable(true).Filterable(true);
+    columns.Add(a => a.DueSalary).Titled("Due Salary").Sortable(true).Filterable(true);
+    columns.Add(a => a.UserStatus).Titled("Status").Sortable(true).Filterable(true);
+    columns.Add()
+    .Encoded(false)
+    .Sanitized(false)
+    .SetWidth(30)
+    .RenderValueAs(a => Html.ActionLink("Edit", "Edit", new { id = a.SalaryDetailId, @class = "btn btn-primary" })).Titled("<span>Edit</span>");
+    
+}).WithPaging(10).Sortable(true)
+
+</div>

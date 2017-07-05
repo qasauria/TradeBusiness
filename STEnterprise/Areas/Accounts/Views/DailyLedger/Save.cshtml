@@ -1,0 +1,375 @@
+﻿@model STEnterprise.Areas.Accounts.Models.DailyLedger
+@{
+    ViewBag.Title = "Save";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align:center; padding:10px">Ledger Entry</h2>
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+@using (Html.BeginForm("Save", "DailyLedger", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Raw(TempData["msg"]);
+    if (Model != null && Model.DailyLedgerId > 0)
+    {
+        @Html.HiddenFor(b => b.DailyLedgerId)
+    }
+    var TransactionId = 0;
+    @Html.HiddenFor(b => b.TransactionId, new { id = "TransactionId", value = TransactionId })
+    <table width="100%">
+        <tr>
+            <td>
+                <label>Transaction Date</label>
+            </td>
+            <td>
+                <label>Account Type</label>
+            </td>
+            <td>
+                <label>Party Name</label>
+            </td>
+            <td>
+                <label>Ledger Entry Type</label>
+            </td>
+            <td>
+                <label>Debit Amount</label>
+            </td>
+            <td>
+                <label>Credit Amount</label>
+            </td>
+            <td>
+                <label>Remarks</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" id="TransactionDate" name="TransactionDate" class="form-control datepicker" value="@DateTime.Now.ToString("dd/MMM/yyyy")" />
+               
+                <span class="error">Transaction Date required</span>
+            </td>
+            <td>
+                @Html.DropDownListFor(a => a.AccountType, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "--Please Select--", Value = "" },
+                    new SelectListItem { Text = "Customer", Value = "Customer" },
+                    new SelectListItem { Text = "Supplier", Value = "Supplier" },
+                     new SelectListItem { Text = "Expense", Value = "Expense" }
+                }, new { @class = "form-control", id = "AccountType" })
+                <span class="error">Account Type required</span>
+            </td>
+            <td>
+                <select name="PartyId" id="PartyId" class="PartyId form-control"></select>
+                <span class="error">Sale Unit Bag required</span>
+            </td>
+            <td>
+                @Html.DropDownListFor(a => a.LedgerEntryType, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "--Please Select--", Value = "" },
+                    new SelectListItem { Text = "Debit", Value = "Debit" },
+                    new SelectListItem { Text = "Credit", Value = "Credit" }
+                }, new { @class = "form-control", id = "LedgerEntryType" })
+                <span class="error">Ledger Entry Type required</span>
+            </td>
+            <td>
+                @Html.TextBoxFor(b => b.DebitAmount, new { @class = "form-control", id = "DebitAmount", @readonly = "readonly" , @onkeypress = "return IsDouble(event);" })
+                <span class="error">Debit Amount required</span>
+            </td>
+            <td>
+                @Html.TextBoxFor(b => b.CreditAmount, new { @class = "form-control", id = "CreditAmount", @readonly = "readonly", @onkeypress = "return IsDouble(event);" })
+                <span class="error">Credit Amount required</span>
+            </td>
+            <td>
+                @Html.TextBoxFor(b => b.Remarks, new { @class = "form-control", id = "Remarks" })
+                <span class="error">Remarks Amount required</span>
+            </td>
+            <td >
+                <input type="button" id="add" value="Add Record" class="btn btn-danger"  style="margin-bottom:20px"/>
+            </td>
+
+        </tr>
+    </table>
+
+    <div id="SaleItems" class="tablecontainer table table-striped table-hover">
+
+    </div>
+
+        <div style="padding:10px 0px; text-align:right">
+            <input id="submit" type="button" value="Save" class="btn btn-success" style="padding: 10px 20px" />
+            <input id="priview" type="button" value="Preview" class="btn btn-info" style="padding: 10px 20px;margin-right:40px" />
+        </div>
+        <hr />
+
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#TransactionDate').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+        });
+
+        $('input[type=date]').each(function () {
+            this.type = "text";
+        });
+
+                $("#AccountType").change(function () {
+                    var PartyId = $("#AccountType").val();
+                    $("#PartyId").empty();
+                    var json = {
+                        AccountType: PartyId
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("GetPartyNameByAccountType", "DailyLedger")',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(json),
+                        success: function (data) {
+                            $("#PartyId").append('<option value="0">Select Item</option>');
+                            $.each(data, function (key, value) {
+                                $("#PartyId").append('<option value=' + value.PartyId + '>' + value.PartyName + '</option>');
+
+                            });
+                        }
+                    });
+
+                });
+            $("#LedgerEntryType").change(function () {
+                $ledgerEntryTypeValue = this.value;
+                if ($ledgerEntryTypeValue === 'Debit') {
+                    $('#DebitAmount').removeAttr("readonly");
+                    $('#CreditAmount').attr("readonly", "readonly");                    
+                    $('#CreditAmount').val("");
+                }
+                else if ($ledgerEntryTypeValue === 'Credit') {
+                    $('#CreditAmount').removeAttr("readonly");
+                    $('#DebitAmount').attr("readonly", "readonly");
+                    $('#DebitAmount').val("");
+                }
+                else {
+                    $('#CreditAmount').attr("readonly", "readonly");
+                    $('#DebitAmount').attr("readonly", "readonly");
+                }
+
+            });
+
+            var SaleItems = [];
+            //Add button click function
+            $('#add').click(function () {
+                //Check validation of order item
+               var isValidItem = true;
+
+                if ($('#TransactionDate').val().trim() == '') {
+                    isValidItem = false;
+                    $('#TransactionDate').siblings('span.error').css('visibility', 'visible');
+                } else {
+                    $('#TransactionDate').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if ($('#AccountType').val().trim() == '') {
+                    isValidItem = false;
+                    $('#AccountType').siblings('span.error').css('visibility', 'visible');
+                } else {
+                    $('#AccountType').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#PartyId').val().trim() == '') {
+                    isValidItem = false;
+                    $('#PartyId').siblings('span.error').css('visibility', 'visible');
+                } else {
+                    $('#PartyId').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if ($('#LedgerEntryType').val().trim() == '') {
+                    isValidItem = false;
+                    $('#LedgerEntryType').siblings('span.error').css('visibility', 'visible');
+                } else {
+                    $('#LedgerEntryType').siblings('span.error').css('visibility', 'hidden');
+                }               
+                //Add item to list if valid
+                if (isValidItem) {
+                    var list={
+                        TransactionDate: $('#TransactionDate').val().trim(),
+                        AccountType: $("#AccountType option:selected").text(),
+                        PartyId: $("#PartyId option:selected").val(),
+                        PartyName: $("#PartyId option:selected").text(),
+                        LedgerEntryType: $("#LedgerEntryType option:selected").val(),
+                        DebitAmount: ($('#DebitAmount').val()),
+                        CreditAmount: ($('#CreditAmount').val()),
+                        Remarks: ($('#Remarks').val())
+
+                    };
+                    SaleItems.push(list);
+
+                    //Clear fields
+                    $('#AccountType').val('').focus();
+                    $('#PartyId').val('').focus();
+                    $('#LedgerEntryType').val('').focus();
+                    $('#TransactionDate,#DebitAmount,#CreditAmount,#Remarks').val('');
+
+                }
+                //populate order items
+                GeneratedItemsTable();
+
+            });
+
+
+            //function for show added items in table
+            function GeneratedItemsTable() {
+                if (SaleItems.length > 0) {
+                    var $table = $('<table id="myTable" class="table table-striped table-hover" width="100%"/>');
+                    $table.append('<thead><tr class="success">' +
+                        '<th>Transaction Id</th>' +
+                        '<th>Transaction Date</th>' +
+                        '<th>Account Type</th>' +
+                        '<th>Party Name</th>' +
+                        '<th>Ledger Entry Type</th>' +
+                        '<th>Debit Amount</th>' +
+                        '<th>Credit Amount</th>' +
+                         '<th>Remarks</th>' +
+                        '</tr></thead>');
+                    var $tbody = $('<tbody/>');
+                    $.each(SaleItems, function (i, val) {
+                        var $row = $('<tr class="active"/>');
+                        $row.append($('<td/>').html("**TransactionId**"));
+                        $row.append($('<td/>').html(val.TransactionDate));
+                        $row.append($('<td/>').html(val.AccountType));
+                        $row.append($('<td/>').html(val.PartyName));
+                        $row.append($('<td/>').html(val.LedgerEntryType));
+                        $row.append($('<td/>').html(val.DebitAmount));
+                        $row.append($('<td/>').html(val.CreditAmount));
+                        $row.append($('<td/>').html(val.Remarks));
+
+                        $tbody.append($row);
+                    });
+
+                    $table.append($tbody);
+
+                    $('#SaleItems').html($table);
+                }
+            }
+
+
+            $('#submit').click(function () {
+
+                //validation of order
+                var isAllValid = true;
+                if (SaleItems.length == 0) {
+                    $('#SaleItems').html('<span style="color:red;">Please add order items</span>');
+                    isAllValid = false;
+                }
+
+                //Save if valid
+                if (isAllValid) {
+                    //var data = {
+                    //    SaleDetails: SaleItems
+                    //}
+                
+                    $(this).val('Please wait...');
+                    $.ajax({
+                        type: "POST",
+                        url: '/Accounts/DailyLedger/Save',
+
+                        data: JSON.stringify(SaleItems),
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        success: function (d) {
+
+                            //check is successfully save to database
+                            if (d.status == true) {
+                                //will send status from server side
+                                alert('Successfully done.');
+                                //clear form
+                                TransactionId = d.a;
+                                SaleItems = [];
+                                $('#TransactionDate').val('');
+                                $('#AccountType').val('');
+                                $('#PartyId').val('');
+                                $('#LedgerEntryType').val('');
+                                $('#DebitAmount').val('');
+                                $('#CreditAmount').val('');
+                                $('#Remarks').val('');
+
+                            }
+                            else {
+                                alert('Failed');
+                            }
+                            $('#submit').val('Save');
+                        },
+                        error: function () {
+                            alert('Error. Please try again.');
+                            $('#submit').val('Save');
+                        }
+                    });
+                }
+
+            });
+
+            $('#priview').click(function () {
+                var transactionId = TransactionId
+                window.open("Privew?transactionId=" + transactionId, "DailyLedger")
+            });
+
+            
+    });
+</script>
+<script type="text/javascript">
+         function IsDouble(evt) {
+             evt = (evt) ? evt : window.event
+             var charCode = (evt.which) ? evt.which : evt.keyCode
+
+             if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+                 return false
+             }
+             else if (charCode == 13) {
+                 return false;
+             }
+             status = ""
+             return true
+         }
+</script>
+<style>
+    /*Adding some css for looks good*/
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+
+    /*css for table*/
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 1px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+
+    #hideid {
+        display: none;
+    }
+</style>

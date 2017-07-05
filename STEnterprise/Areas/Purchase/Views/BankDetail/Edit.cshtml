@@ -1,0 +1,79 @@
+﻿@model STEnterprise.Areas.Purchase.Models.BankDetail
+@{
+    ViewBag.Title = "Bank Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Update Bank Detail Information</h3>
+<hr />
+
+@using (Html.BeginForm("Edit", "BankDetail", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    if (Model != null && Model.BankDetailId > 0)
+    {
+        @Html.HiddenFor(b => b.BankDetailId)
+    }
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.BankName, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.BankName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.BankName , "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.BranchName, new {@class = "control-label col-md-offset-2 col-sm-2"})
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.BranchName, new {@class = "form-control"})
+            @Html.ValidationMessageFor(b => b.BranchName, "", new {@class = "text-danger", @style = "color: red"})
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        @Html.LabelFor(a => a.AccountNumber, new {@class = "control-label col-md-offset-2 col-sm-2"})
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.AccountNumber, new {@class = "form-control"})
+            @Html.ValidationMessageFor(b => b.AccountNumber)
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.Address, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.Address, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.Address, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(a => a.ContactPerson, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.TextBoxFor(b => b.ContactPerson, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.ContactPerson, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(a => a.IsActive, new { @class = "control-label col-md-offset-2 col-sm-2" })
+        <div class="col-sm-5">
+            @Html.DropDownListFor(a => a.IsActive, new List<SelectListItem>()
+                {
+                    new SelectListItem { Text = "Active", Value = "true" },
+                    new SelectListItem { Text = "Inactive", Value = "false" }
+                }, new { @class = "form-control" })
+            @Html.ValidationMessageFor(b => b.IsActive, "", new { @class = "text-danger", @style = "color: red" })
+        </div>
+    </div>
+    <br />
+    <div class="form-group">
+        <div class=" col-sm-offset-4 col-sm-2 ">
+            <input type="submit" value="Update" class="btn btn-primary" />
+        </div>
+    </div>
+}
+
+<div>
+    <a class="popup btn btn-primary" href="/Purchase/BankDetail/Index" style="margin-bottom:20px; margin-top:20px;">Back To List</a>
+</div>

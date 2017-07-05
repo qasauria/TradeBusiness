@@ -1,0 +1,197 @@
+﻿@model STEnterprise.Areas.Accounts.Models.Loan
+@{
+    ViewBag.Title = "Paid Loan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="text-align:center; padding-right:150px">Paid Loan</h2>
+
+<style>
+    span.field-validation-error {
+        color: red;
+    }
+</style>
+
+@using (Html.BeginForm("LoanPaid", "Loan", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Raw(TempData["msg"]);
+    if (Model != null && Model.LoanId > 0)
+    {
+        @Html.HiddenFor(b => b.LoanId)
+    }
+    if (ViewBag.error != null)
+    {
+        <h2 style="color:red">@ViewBag.error</h2>
+    }
+    <table class="table">
+        <tr>
+            <td class="col-md-2">
+                <label>Loan Date</label>
+            </td>
+            <td class="col-md-5">
+                <input type="text" id="Date" name="Date" class="form-control datepicker" value="@DateTime.Now.ToString("dd/MMMM/yyyy")" />
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="col-md-2">
+                <label>Truncation Number</label>
+            </td>
+            <td class="col-md-5">
+                <input type="text" id="TransactionNumber" name="TransactionNumber" class="form-control " />
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label>Bank Name</label>
+            </td>
+            <td class="col-md-5">
+                <select id="BankName" name="BankName" class="form-control" readonly="readonly"></select>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label>Account Number</label>
+            </td>
+            <td class="col-md-5">
+                <input type="text" name="AccountNumber" id="AccountNumber" class="AccountNumber form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label> Amount</label>
+            </td>
+            <td class="col-md-5">
+                @Html.TextBoxFor(b => b.Amount, new { @class = "form-control", id = "Amount", @readonly = "readonly" })
+            </td>
+
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label> Paid Amount</label>
+            </td>
+            <td class="col-md-5">
+                @Html.TextBoxFor(b => b.LoanPaid, new { @class = "form-control", id = "LoanPaid", @onkeypress = "return IsDouble(event);" })
+            </td>
+
+        </tr>
+        <tr>
+            <td class="col-md-1">
+                <label>Remarks</label>
+            </td>
+            <td class="col-md-5">
+                @Html.TextBoxFor(b => b.Remarks, new { @class = "form-control", id = "Remarks" })
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-1"></td>
+            <td class="col-md-5">
+                <input id="submit" type="submit" value="Save" class="btn btn-success" style="padding: 10px 20px" />
+                @if (ViewBag.Message != null)
+                {
+                    <h2 style="color:green">@ViewBag.Message</h2>
+                }
+                else
+                {
+                    <h2 style="color:red">@ViewBag.Message</h2>
+                }
+            </td>
+        </tr>
+    </table>
+
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+            $('#Date').datepicker({ dateFormat: 'dd/MM/yy', type: Text }).click(function () { $(this).focus(); });
+        });
+
+        $('input[type=date]').each(function () {
+            this.type = "text";
+        });
+        $("#TransactionNumber").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Accounts/Loan/AutoCompleteTruncationNumber",
+                    type: "GET",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "",
+                results: ""
+            }
+        });
+
+        $("#TransactionNumber").change(function () {
+            var TruncationNumber = $("#TransactionNumber").val();
+            $("#AccountNumber").empty();
+            $("#BankName").empty();
+            $("#Amount").empty();
+            var json = {
+                TruncationNumber: TruncationNumber
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetBankNameAndTotalAmountByTruncationNumber", "Loan")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $("#AccountNumber").val(data.AccountNumber);
+                        $("#Amount").val(data.Amount);
+                    });
+
+                },
+            });
+        });
+        $("#TransactionNumber").change(function () {
+            var TruncationNumber = $("#TransactionNumber").val();
+            $("#AccountNumber").empty();
+            $("#BankName").empty();
+            $("#Amount").empty();
+            var json = {
+                TruncationNumber: TruncationNumber
+            };
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetBankNameByTruncationNumber", "Loan")',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(json),
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $("#BankName").append('<option value=' + value.BankDetailId + '>' + value.BankName + '</option>');
+                    });
+
+                },
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    function IsDouble(evt) {
+        evt = (evt) ? evt : window.event
+        var charCode = (evt.which) ? evt.which : evt.keyCode
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46) {
+            return false
+        }
+        else if (charCode == 13) {
+            return false;
+        }
+        status = ""
+        return true
+    }
+</script>
+
